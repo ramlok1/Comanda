@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_platillos"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context="oasispv.pv.platillos">
+
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:theme="?attr/actionBarTheme"
+        android:minHeight="?attr/actionBarSize"
+        android:id="@+id/toolbar2"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:text="@string/familias"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/txtlabfam"
+        android:layout_below="@+id/toolbar2"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textSize="36sp"
+        android:textAlignment="center"
+        android:fontFamily="sans-serif"
+        tools:ignore="RtlHardcoded" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtlabfam"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/scvfam"
+        tools:ignore="RtlHardcoded">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:orientation="horizontal"
+            android:id="@+id/laygrupo" />
+    </HorizontalScrollView>
+
+    <TextView
+        android:text="@string/sub_familias"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtlaysubgr"
+        android:textSize="36sp"
+        android:layout_below="@+id/scvfam"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+
+        android:textAlignment="center"
+        tools:ignore="RtlHardcoded" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtlaysubgr"
+        android:id="@+id/scvsubfam"
+        android:fillViewport="false">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:orientation="horizontal"
+            android:id="@+id/laysuvgr" />
+    </HorizontalScrollView>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/scvsubfam"
+        >
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/layplatillos" />
+    </ScrollView>
+
+</RelativeLayout>
