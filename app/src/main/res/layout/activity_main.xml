@@ -29,56 +29,25 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Usuario"
+            android:hint="@string/usuario"
             android:layout_weight="1"
             android:id="@+id/usrtxt"
             android:textSize="30sp"
             android:textStyle="bold"
             android:textAlignment="center"
-            android:capitalize="characters" />
+            android:capitalize="characters"
+            android:maxLines="1"
+            tools:ignore="Deprecated" />
     </android.support.design.widget.TextInputLayout>
 
     <Button
-        android:text="CAREYES"
+        android:text="@string/texto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/btnini"
-        android:layout_weight="0.30" />
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.16">
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <Button
-                android:text="PVDATOS"
-                android:layout_width="wrap_content"
-                android:layout_height="82dp"
-                android:id="@+id/btnpvd"
-                android:layout_weight="1.00"
-                tools:ignore="ButtonStyle" />
-
-            <Button
-                android:text="PVFRONT"
-                android:layout_width="wrap_content"
-                android:layout_height="82dp"
-                android:id="@+id/btnpvf"
-                android:layout_weight="1.00"
-                tools:ignore="ButtonStyle" />
-
-            <Button
-                android:text="SYNC"
-                android:layout_width="wrap_content"
-                android:id="@+id/btnsync"
-                android:layout_weight="1"
-                tools:ignore="ButtonStyle"
-                android:layout_height="82dp" />
-        </LinearLayout>
-    </FrameLayout>
+        android:layout_weight="0.30"
+        android:textSize="30sp"
+        android:textStyle="normal|italic"
+        android:textAlignment="center" />
 
 </LinearLayout>

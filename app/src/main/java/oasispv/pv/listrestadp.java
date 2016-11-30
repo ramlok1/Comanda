@@ -12,13 +12,14 @@ public class listrestadp extends BaseAdapter {
     // Declare Variables
     Context context;
     String[] titulos;
-    int[] imagenes;
+    String[] vcant;
+
     LayoutInflater inflater;
 
-    public listrestadp(Context context, String[] titulos, int[] imagenes) {
+    public listrestadp(Context context, String[] titulos, String[] vcant) {
         this.context = context;
         this.titulos = titulos;
-        this.imagenes = imagenes;
+        this.vcant = vcant;
     }
 
     @Override
@@ -40,20 +41,20 @@ public class listrestadp extends BaseAdapter {
 
         // Declare Variables
         TextView txtTitle;
-        ImageView imgImg;
+        TextView txtcant;
 
         //http://developer.android.com/intl/es/reference/android/view/LayoutInflater.html
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View itemView = inflater.inflate(R.layout.res_list_row, parent, false);
+        View itemView = inflater.inflate(R.layout.lay_popup, parent, false);
 
         // Locate the TextViews in listview_item.xml
-        txtTitle = (TextView) itemView.findViewById(R.id.list_row_title);
-        imgImg = (ImageView) itemView.findViewById(R.id.list_row_image);
+        txtTitle = (TextView) itemView.findViewById(R.id.txtprd);
+        txtcant = (TextView) itemView.findViewById(R.id.txtcnt);
 
         // Capture position and set to the TextViews
         txtTitle.setText(titulos[position]);
-        imgImg.setImageResource(imagenes[0]);
+        txtcant.setText(vcant[position]);
 
         return itemView;
     }

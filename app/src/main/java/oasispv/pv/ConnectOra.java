@@ -1,25 +1,22 @@
 package oasispv.pv;
 
-        import android.util.Log;
+
 
         import java.sql.CallableStatement;
         import java.sql.Connection;
         import java.sql.DriverManager;
         import java.sql.SQLException;
-        import java.sql.Statement;
+
 
 public class ConnectOra {
-    public String driver, url;//, ip, bd, usr, pass;
-    public Connection conexion;
-    private Statement stmt;
 
-    public ConnectOra(String ip,String bd,String usr, String pass) {
+    private static String driver, url;
+    private static  Connection conexion;
+
+
+    public  ConnectOra(String ip,String bd,String usr, String pass) {
         driver = "oracle.jdbc.driver.OracleDriver";
-        // driver = "oracle.jdbc.OracleDriver";
-      /*  this.ip = "192.168.1.8";
-        this.bd = "CRONOS";
-        this.usr = "FRGRAND";
-        this.pass = "SERVICE";*/
+
 
         url = new String("jdbc:oracle:thin:@" + ip + ":1521:" + bd);
 
@@ -36,11 +33,11 @@ public class ConnectOra {
         }
     }
 
-    public Connection getConexion() {
+    public static Connection getConexion() {
         return conexion;
     }
 
-    public Connection CerrarConexion() throws SQLException {
+    public static Connection CerrarConexion() throws SQLException {
         conexion.close();
         conexion = null;
         return conexion;

@@ -3,4 +3,7 @@
     <string name="title_activity_tables">Restaurante:</string>
     <string name="familias">Familias</string>
     <string name="sub_familias">Sub Familias</string>
+    <string name="texto">TEXTO</string>
+    <string name="usuario">Usuario</string>
+    <string name="menu">MENU</string>
 </resources>
