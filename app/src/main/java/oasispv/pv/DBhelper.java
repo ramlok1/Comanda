@@ -21,6 +21,7 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String TABLE_PVMENUS = "PVMENUS";
     public static final String TABLE_PVMESA = "PVMESA";
     public static final String TABLE_CONNECT = "CONEXION";
+    public static final String TABLE_COMANDA = "COMANDA";
 
     // Common column names
     public static final String KEY_ID = "id";
@@ -80,12 +81,32 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String KEY_CN = "CN";
     public static final String KEY_IP = "IP";
 
+    // TABLA COMANDA
+    public static final String CMD_SESION = "SESION";
+    public static final String CMD_MESA = "MESA";
+    public static final String CMD_PRID = "PRID";
+    public static final String CMD_PRDESC = "PRDESC";
+    public static final String CMD_CANTIDAD = "CANTIDAD";
+    public static final String CMD_COMENSAL = "COMENSAL";
+    public static final String CMD_TIEMPO = "TIEMPO";
+    public static final String CMD_STATUS = "STATUS";
+
+
 
 
 
 
 
     // Table Create Statements
+    // CREAR TABLA COMANDA
+    private static final String CREATE_TABLE_COMANDA = "CREATE TABLE "
+            + TABLE_COMANDA + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
+            + CMD_SESION + " INTEGER,"+ CMD_MESA + " TEXT,"
+            + CMD_PRID + " TEXT,"+ CMD_PRDESC + " TEXT,"
+            + CMD_COMENSAL + " INTEGER,"+ CMD_TIEMPO + " INTEGER,"
+            + CMD_STATUS + " TEXT"
+            + ")";
+
     // CREAR TABLA PVCAT1
     private static final String CREATE_TABLE_PVCAT1 = "CREATE TABLE "
             + TABLE_PVCAT1 + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
@@ -145,6 +166,7 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_PVMENUS);
         db.execSQL(CREATE_TABLE_PVMESA);
         db.execSQL(CREATE_TABLE_CONEXION);
+        db.execSQL(CREATE_TABLE_COMANDA);
 
     }
 
@@ -156,6 +178,7 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PVMENUS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PVMESA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONNECT);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMANDA);
 
 
         // create new tables

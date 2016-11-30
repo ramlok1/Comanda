@@ -133,7 +133,6 @@ public class platillos extends AppCompatActivity {
 
         LinearLayout btnsContainer = (LinearLayout) findViewById(R.id.laymenu);
         LinearLayout btnstmp = (LinearLayout) findViewById(R.id.laybtns);
-        btnstmp.removeAllViews();
         btnsContainer.removeAllViews();
         //Crea botons dinamicamente.
         int contl = 1;
