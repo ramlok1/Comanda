@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/popup_element"
+    android:weightSum="1"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:weightSum="4">
+
+        <TextView
+            android:text="COMANDA"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView"
+            android:textAlignment="center"
+            android:textSize="30sp"
+            android:layout_weight="4"
+            android:fontFamily="monospace" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="654dp"
+            android:id="@+id/listprd"
+            android:paddingTop="10dp" />
+    </LinearLayout>
+
+    <TextView
+        android:text="COMENTARIOS"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView2"
+        android:textSize="18sp"
+        android:textAlignment="center" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/txtcmdcoment" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:text="CONTINUAR"
+            android:layout_width="match_parent"
+            android:id="@+id/btncmdcont"
+            android:layout_weight="1"
+            android:layout_height="50dp" />
+
+        <Button
+            android:text="ENVIAR"
+            android:layout_width="match_parent"
+            android:id="@+id/btncmdsend"
+            android:layout_weight="1"
+            android:layout_height="50dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

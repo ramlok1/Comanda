@@ -5,10 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-public class listrestadp extends BaseAdapter {
+/**
+ * Created by Usuario on 01/12/2016.
+ */
+
+public class lcomandar_adapter extends BaseAdapter {
     // Declare Variables
     Context context;
     String[] prdesc;
@@ -18,7 +21,7 @@ public class listrestadp extends BaseAdapter {
 
     LayoutInflater inflater;
 
-    public listrestadp(Context context, String[] prdesc, Integer[] cant, Integer[] comensal, Integer[] tiempo) {
+    public lcomandar_adapter(Context context, String[] prdesc, Integer[] cant, Integer[] comensal, Integer[] tiempo) {
         this.context = context;
         this.prdesc = prdesc;
         this.cant = cant;
@@ -62,9 +65,9 @@ public class listrestadp extends BaseAdapter {
 
         // Capture position and set to the TextViews
         txtprd.setText(prdesc[position]);
-        txtcnt.setText(cant[position].toString());
-        txtcomensal.setText(comensal[position].toString());
-        txtiempo.setText(tiempo[position].toString());
+        txtcnt.setText(cant[position]);
+        txtcomensal.setText(comensal[position]);
+        txtiempo.setText(tiempo[position]);
 
         return itemView;
     }

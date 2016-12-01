@@ -10,7 +10,7 @@ public class DBhelper extends SQLiteOpenHelper {
     private static final String LOG = "DatabaseHelper";
 
     // Database Version
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 1;
 
     // Database Name
     private static final String DATABASE_NAME = "comandero";
@@ -22,6 +22,7 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String TABLE_PVMESA = "PVMESA";
     public static final String TABLE_CONNECT = "CONEXION";
     public static final String TABLE_COMANDA = "COMANDA";
+    public static final String TABLE_SESION = "SESION";
 
     // Common column names
     public static final String KEY_ID = "id";
@@ -91,8 +92,11 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String CMD_TIEMPO = "TIEMPO";
     public static final String CMD_STATUS = "STATUS";
 
-
-
+    // TABLA SESION
+    public static final String SES_MESERO = "MESERO";
+    public static final String SES_MOVI = "MOVI";
+    public static final String SES_FASE = "FASE";
+    public static final String SES_STATUS = "STATUS";
 
 
 
@@ -102,7 +106,7 @@ public class DBhelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_COMANDA = "CREATE TABLE "
             + TABLE_COMANDA + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
             + CMD_SESION + " INTEGER,"+ CMD_MESA + " TEXT,"
-            + CMD_PRID + " TEXT,"+ CMD_PRDESC + " TEXT,"
+            + CMD_PRID + " TEXT,"+ CMD_PRDESC + " TEXT,"+ CMD_CANTIDAD + " INTEGER,"
             + CMD_COMENSAL + " INTEGER,"+ CMD_TIEMPO + " INTEGER,"
             + CMD_STATUS + " TEXT"
             + ")";
@@ -150,6 +154,11 @@ public class DBhelper extends SQLiteOpenHelper {
             + KEY_TIPO + " TEXT,"+ KEY_MOVI_C + " TEXT,"+KEY_FASE_C+" TEXT,"+ KEY_NAME_C + " TEXT,"+KEY_UN+" TEXT,"+KEY_PW+" TEXT,"+KEY_CN+" TEXT,"
             + KEY_IP + " TEXT"
             + ")";
+    // CREAR TABLA SESION
+    private static final String CREATE_TABLE_SESION = "CREATE TABLE "
+            + TABLE_SESION + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
+            + SES_MESERO + " TEXT,"+ SES_MOVI + " TEXT,"+SES_FASE+" TEXT,"+SES_STATUS+" TEXT"
+            + ")";
 
 
 
@@ -167,6 +176,7 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_PVMESA);
         db.execSQL(CREATE_TABLE_CONEXION);
         db.execSQL(CREATE_TABLE_COMANDA);
+        db.execSQL(CREATE_TABLE_SESION);
 
     }
 
@@ -179,6 +189,8 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PVMESA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONNECT);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMANDA);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SESION);
+
 
 
         // create new tables

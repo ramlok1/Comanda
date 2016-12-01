@@ -12,7 +12,10 @@ public  class variables {
     public static String pw;
     public static String movi;
     public static String fase;
-    public static String name;
+    public static String mesero;
+    public static String movi_desc;
+    public static String mesa;
+    public static Integer sesion;
 
 
 

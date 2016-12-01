@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -24,8 +25,7 @@ import java.sql.Statement;
 public class MainActivity extends AppCompatActivity{
     private DBhelper dbhelper;
     Button btnini;
-    String rest="";
-    Boolean sesion=false;
+    TextView txtuser;
     ConnectOra db;
 
 
@@ -45,11 +45,22 @@ public class MainActivity extends AppCompatActivity{
 
 
         btnini= (Button) findViewById(R.id.btnini);
+        txtuser= (TextView) findViewById(R.id.usrtxt);
 
         btnini.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new llenar().execute();
+                 variables.mesero=txtuser.getText().toString();
+                dbhelper = new DBhelper(getApplicationContext());
+                SQLiteDatabase dbs = dbhelper.getWritableDatabase();
+
+                ContentValues cv = new ContentValues();
+                cv.put(DBhelper.SES_MESERO,variables.mesero);
+                cv.put(DBhelper.SES_MOVI,variables.movi);
+                cv.put(DBhelper.SES_FASE, variables.fase);
+                cv.put(DBhelper.SES_STATUS, "A");
+                dbs.insert(DBhelper.TABLE_COMANDA, null, cv);
+
                 Intent intent = new Intent(getApplicationContext(), tables.class);
                 startActivity(intent);
 
@@ -77,39 +88,6 @@ public class MainActivity extends AppCompatActivity{
 
 
     }
-    public class llenar extends AsyncTask<String,String,String>{
-        final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this,R.style.AppTheme_Dark_Dialog);
-
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            progressDialog.setIndeterminate(true);
-            progressDialog.setMessage("Iniciando...");
-            progressDialog.show();
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-
-            super.onPostExecute(s);
-            progressDialog.dismiss();
-
-
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-          String s="";
-
-            actualiza_mesas();
-
-
-            return s;
-        }
-    }
-
     public class datostablet extends AsyncTask<String,String,String>{
         final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this,R.style.AppTheme_Dark_Dialog);
 
@@ -128,7 +106,7 @@ public class MainActivity extends AppCompatActivity{
 
             super.onPostExecute(resp);
             progressDialog.dismiss();
-            btnini.setText(variables.name);
+            btnini.setText(variables.movi_desc);
             Toast.makeText(getApplicationContext(),resp,Toast.LENGTH_LONG).show();
 
         }
@@ -263,7 +241,7 @@ public class MainActivity extends AppCompatActivity{
                 variables.cn=c.getString(c.getColumnIndex(DBhelper.KEY_CN));
                 variables.un=c.getString(c.getColumnIndex(DBhelper.KEY_UN));
                 variables.pw=c.getString(c.getColumnIndex(DBhelper.KEY_PW));
-                variables.name=c.getString(c.getColumnIndex(DBhelper.KEY_NAME_C));
+                variables.movi_desc=c.getString(c.getColumnIndex(DBhelper.KEY_NAME_C));
 
             } else {// Busca valores de PV de Tablet en Cronos
                 c = dbs.rawQuery(selectremoto, null);
@@ -306,7 +284,7 @@ public class MainActivity extends AppCompatActivity{
                             variables.cn=rs.getString("PT_CN");
                             variables.un=rs.getString("PT_UN");
                             variables.pw=rs.getString("PT_PW");
-                            variables.name=rs.getString("PT_NOMBRE");
+                            variables.movi_desc=rs.getString("PT_NOMBRE");
                         }
                         stmt.close();
                         dbs.close();
@@ -346,43 +324,5 @@ public class MainActivity extends AppCompatActivity{
 
 
     }
-    private void actualiza_mesas(){
 
-        Connection conexion=db.getConexion();
-        Statement stmt = null;
-        dbhelper = new DBhelper(getApplicationContext());
-        SQLiteDatabase dbs = dbhelper.getWritableDatabase();
-        //borrar datos existentes
-        dbs.delete(DBhelper.TABLE_PVMESA, null, null);
-
-        String query = "select CE_MESA,PM_NOMBRE,CE_MESERO, CE_HABI, CE_PAX " +
-                "                 FROM PVCHEQDIAENC,PVMESAS where CE_MOVI='"+variables.movi+"' and CE_FASE='"+variables.fase+"' and CE_CIERRA_F IS NULL" +
-                "                 and CE_CAN_F IS NULL and CE_MESA IS NOT NULL AND PM_MOVI=CE_MOVI AND PM_FASE=CE_FASE AND PM_MESA=CE_MESA";
-
-        //////INSERTA PVMESA
-        try {
-            stmt = conexion.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            while (rs.next()) {
-                ContentValues cv = new ContentValues();
-                cv.put(DBhelper.KEY_MOVI, variables.movi);
-                cv.put(DBhelper.KEY_FASE, variables.fase);
-                cv.put(DBhelper.KEY_MESA, rs.getString("CE_MESA"));
-                cv.put(DBhelper.KEY_MESA_NAME, rs.getString("PM_NOMBRE"));
-                cv.put(DBhelper.KEY_MESA_MESERO, rs.getString("CE_MESERO"));
-                cv.put(DBhelper.KEY_HABI, rs.getString("CE_HABI"));
-                cv.put(DBhelper.KEY_GUEST, "Conrado Gonzalez");
-                cv.put(DBhelper.KEY_PAX, rs.getInt("CE_PAX"));
-                dbs.insert(DBhelper.TABLE_PVMESA, null, cv);
-            }
-
-            stmt.close();
-        } catch (SQLException e) {
-            System.out.println( "error pvcat1 " + e);
-        }
-
-
-
-
-    }
 }

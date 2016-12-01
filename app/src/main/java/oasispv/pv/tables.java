@@ -1,6 +1,7 @@
 package oasispv.pv;
 
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,13 +14,18 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 
 public class tables extends AppCompatActivity {
 
     private DBhelper dbhelper;
-
+    ConnectOra db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +41,9 @@ public class tables extends AppCompatActivity {
 
         ActionBar backbtn = getSupportActionBar();
         backbtn.setDisplayHomeAsUpEnabled(true);
-
+        actualiza_mesas();
         leermesas();
+        leersesion();
 
 
 
@@ -78,8 +85,7 @@ public class tables extends AppCompatActivity {
 
                             Intent intent = new Intent(getApplicationContext(), platillos.class);
                             Button b = (Button)v;
-                            intent.putExtra("table",b.getText().toString());
-                            intent.putExtra("table_id",b.getTag().toString());
+                            variables.mesa=b.getTag().toString();
                             startActivity(intent);
 
                         }
@@ -97,6 +103,68 @@ public class tables extends AppCompatActivity {
 
             }
         dbs.close();
+
+
+    }
+    private void leersesion() {
+        dbhelper = new DBhelper(getApplicationContext());
+        SQLiteDatabase dbs = dbhelper.getWritableDatabase();
+
+
+
+        String query = "SELECT id FROM " + DBhelper.TABLE_SESION + " WHERE MOVI='" + variables.movi + "' AND FASE='" + variables.fase + "' AND MESERO='"+variables.mesero+"' AND STATUS='A' ";
+
+        Cursor rs = dbs.rawQuery(query, null);
+        if (rs.getCount() > 0&&rs.getCount()<2) {
+            rs.moveToFirst();
+            do {
+               variables.sesion=rs.getInt(rs.getColumnIndex(DBhelper.KEY_ID));
+
+            }while (rs.moveToNext());
+
+        }else {
+            Toast.makeText(getApplicationContext(), "ERROR CON SESION", Toast.LENGTH_LONG).show();
+        }
+        dbs.close();
+
+
+    }
+    private void actualiza_mesas(){
+
+        Connection conexion=db.getConexion();
+        Statement stmt = null;
+        dbhelper = new DBhelper(getApplicationContext());
+        SQLiteDatabase dbs = dbhelper.getWritableDatabase();
+        //borrar datos existentes
+        dbs.delete(DBhelper.TABLE_PVMESA, null, null);
+
+        String query = "select CE_MESA,PM_NOMBRE,CE_MESERO, CE_HABI, CE_PAX " +
+                "                 FROM PVCHEQDIAENC,PVMESAS where CE_MOVI='"+variables.movi+"' and CE_FASE='"+variables.fase+"' and CE_CIERRA_F IS NULL" +
+                "                 and CE_CAN_F IS NULL and CE_MESA IS NOT NULL AND PM_MOVI=CE_MOVI AND PM_FASE=CE_FASE AND PM_MESA=CE_MESA";
+
+        //////INSERTA PVMESA
+        try {
+            stmt = conexion.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                ContentValues cv = new ContentValues();
+                cv.put(DBhelper.KEY_MOVI, variables.movi);
+                cv.put(DBhelper.KEY_FASE, variables.fase);
+                cv.put(DBhelper.KEY_MESA, rs.getString("CE_MESA"));
+                cv.put(DBhelper.KEY_MESA_NAME, rs.getString("PM_NOMBRE"));
+                cv.put(DBhelper.KEY_MESA_MESERO, rs.getString("CE_MESERO"));
+                cv.put(DBhelper.KEY_HABI, rs.getString("CE_HABI"));
+                cv.put(DBhelper.KEY_GUEST, "Conrado Gonzalez");
+                cv.put(DBhelper.KEY_PAX, rs.getInt("CE_PAX"));
+                dbs.insert(DBhelper.TABLE_PVMESA, null, cv);
+            }
+
+            stmt.close();
+        } catch (SQLException e) {
+            System.out.println( "error pvcat1 " + e);
+        }
+
+
 
 
     }
