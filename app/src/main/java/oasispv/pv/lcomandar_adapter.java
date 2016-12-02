@@ -7,41 +7,34 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-/**
- * Created by Usuario on 01/12/2016.
- */
+import java.util.ArrayList;
 
 public class lcomandar_adapter extends BaseAdapter {
     // Declare Variables
-    Context context;
-    String[] prdesc;
-    Integer[] cant;
-    Integer[] comensal;
-    Integer[] tiempo;
+    private Context context;
+    private LayoutInflater inflater;
+    private ArrayList<datoscomanda> lista;
 
-    LayoutInflater inflater;
 
-    public lcomandar_adapter(Context context, String[] prdesc, Integer[] cant, Integer[] comensal, Integer[] tiempo) {
+
+    public lcomandar_adapter(Context context, ArrayList<datoscomanda> lista) {
         this.context = context;
-        this.prdesc = prdesc;
-        this.cant = cant;
-        this.comensal = comensal;
-        this.tiempo = tiempo;
+        this.lista=lista;
     }
 
     @Override
     public int getCount() {
-        return prdesc.length;
+        return lista.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return position;
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -55,7 +48,7 @@ public class lcomandar_adapter extends BaseAdapter {
         //http://developer.android.com/intl/es/reference/android/view/LayoutInflater.html
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View itemView = inflater.inflate(R.layout.lay_popup, parent, false);
+        View itemView = inflater.inflate(R.layout.lay_comanda_r, parent, false);
 
         // Locate the TextViews in listview_item.xml
         txtprd = (TextView) itemView.findViewById(R.id.txtprd);
@@ -64,10 +57,10 @@ public class lcomandar_adapter extends BaseAdapter {
         txtiempo = (TextView) itemView.findViewById(R.id.txtiempo);
 
         // Capture position and set to the TextViews
-        txtprd.setText(prdesc[position]);
-        txtcnt.setText(cant[position]);
-        txtcomensal.setText(comensal[position]);
-        txtiempo.setText(tiempo[position]);
+        txtprd.setText(lista.get(position).prdesc);
+        txtcnt.setText(Integer.toString(lista.get(position).cantidad));
+        txtcomensal.setText(Integer.toString(lista.get(position).comensal));
+        txtiempo.setText(Integer.toString(lista.get(position).tiempo));
 
         return itemView;
     }

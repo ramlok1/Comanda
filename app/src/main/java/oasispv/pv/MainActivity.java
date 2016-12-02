@@ -53,13 +53,13 @@ public class MainActivity extends AppCompatActivity{
                  variables.mesero=txtuser.getText().toString();
                 dbhelper = new DBhelper(getApplicationContext());
                 SQLiteDatabase dbs = dbhelper.getWritableDatabase();
-
+                dbs.delete(DBhelper.TABLE_SESION, null, null);
                 ContentValues cv = new ContentValues();
                 cv.put(DBhelper.SES_MESERO,variables.mesero);
                 cv.put(DBhelper.SES_MOVI,variables.movi);
                 cv.put(DBhelper.SES_FASE, variables.fase);
                 cv.put(DBhelper.SES_STATUS, "A");
-                dbs.insert(DBhelper.TABLE_COMANDA, null, cv);
+                dbs.insert(DBhelper.TABLE_SESION, null, cv);
 
                 Intent intent = new Intent(getApplicationContext(), tables.class);
                 startActivity(intent);

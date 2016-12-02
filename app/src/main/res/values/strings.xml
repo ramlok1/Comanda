@@ -6,4 +6,10 @@
     <string name="texto">TEXTO</string>
     <string name="usuario">Usuario</string>
     <string name="menu">MENU</string>
+    <string name="tiempo">TIEMPO</string>
+    <string name="cantidad">CANTIDAD</string>
+    <string name="comensal">COMENSAL</string>
+    <string name="producto">PRODUCTO</string>
+    <string name="comentarios">COMENTARIOS</string>
+    <string name="enviar">ENVIAR</string>
 </resources>

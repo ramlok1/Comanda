@@ -97,7 +97,7 @@ public class platillos extends AppCompatActivity {
                     btnsContainer.addView(contenedor1);
                 }
                 Button btn = new Button(this);
-                List<String> data = new ArrayList<String>();
+                List<String> data = new ArrayList<>();
 
                 btn.setLayoutParams(new LinearLayout.LayoutParams(120, LinearLayout.LayoutParams.MATCH_PARENT));
                 btn.setText(rs.getString(rs.getColumnIndex(DBhelper.KEY_CAT1_DESC)));
@@ -110,7 +110,6 @@ public class platillos extends AppCompatActivity {
                 btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Button btn = (Button)v;
                         String dato1 = ((List<String>)v.getTag()).get(0).toString();
                         String dato2 = ((List<String>)v.getTag()).get(1).toString();
                         scrollcat2(dato1,dato2);
@@ -134,6 +133,7 @@ public class platillos extends AppCompatActivity {
 
         LinearLayout btnsContainer = (LinearLayout) findViewById(R.id.laymenu);
         LinearLayout btnstmp = (LinearLayout) findViewById(R.id.laybtns);
+        btnstmp.removeAllViews();
         btnsContainer.removeAllViews();
         //Crea botons dinamicamente.
         int contl = 1;
@@ -250,6 +250,7 @@ public class platillos extends AppCompatActivity {
                     String dato1 = ((List<String>)v.getTag()).get(0).toString();
                     String dato2 = ((List<String>)v.getTag()).get(1).toString();
                     inserta_producto(dato1,dato2);
+                    muestra_cmdtmp();
 
 
                 }
@@ -270,42 +271,43 @@ public class platillos extends AppCompatActivity {
 
     private void popup() {
          final PopupWindow pwindo;
-        String query = "SELECT PRDESC,CANTIDAD,COMENSAL,TIEMPO FROM " + DBhelper.TABLE_COMANDA + " WHERE MESA='" + variables.mesa + "'  AND STATUS='A' AND SESION='"+variables.sesion+"'";
+        String query = "SELECT ID,PRDESC,CANTIDAD,COMENSAL,TIEMPO FROM " + DBhelper.TABLE_COMANDA + " WHERE MESA='" + variables.mesa + "'  AND STATUS='A' AND SESION='"+variables.sesion+"'";
         Cursor rs = dbs.rawQuery(query, null);
+        ArrayList<datoscomanda> datos = new ArrayList<>();
 
         if (rs.moveToFirst()) {
-            String[] prdesc = new String[rs.getCount()];
-            Integer[] cant = new Integer[rs.getCount()];
-            Integer[] comensal = new Integer[rs.getCount()];
-            Integer[] tiempo = new Integer[rs.getCount()];
             do {
-
                 try {
-                    prdesc[rs.getPosition()]=rs.getString(rs.getColumnIndex(DBhelper.CMD_PRDESC));
-                    cant[rs.getPosition()]=rs.getInt(rs.getColumnIndex(DBhelper.CMD_CANTIDAD));
-                    comensal[rs.getPosition()]=rs.getInt(rs.getColumnIndex(DBhelper.CMD_COMENSAL));
-                    tiempo[rs.getPosition()]=rs.getInt(rs.getColumnIndex(DBhelper.CMD_TIEMPO));
+                    datos.add(new datoscomanda(
+                            rs.getString(rs.getColumnIndex(DBhelper.CMD_PRDESC)),
+                            rs.getInt(rs.getColumnIndex(DBhelper.CMD_CANTIDAD)),
+                            rs.getInt(rs.getColumnIndex(DBhelper.CMD_COMENSAL)),
+                            rs.getInt(rs.getColumnIndex(DBhelper.CMD_TIEMPO)),
+                            rs.getInt(rs.getColumnIndex(DBhelper.KEY_ID))
+                    ));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
             }while (rs.moveToNext());
 
             LayoutInflater inflat = (LayoutInflater) platillos.this
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
             View layout = inflat.inflate(R.layout.poplay,
                     (ViewGroup) findViewById(R.id.popup_element));
 
             ListView laycmdread = (ListView) layout.findViewById(R.id.listprd);
-            listrestadp adapter = new listrestadp(platillos.this,prdesc,cant,comensal,tiempo);
+            listrestadp adapter = new listrestadp(platillos.this,datos);
             laycmdread.setAdapter(adapter);
-            pwindo = new PopupWindow(layout, 500,900, true);
+            int x = findViewById(R.id.laybtns).getWidth();
+            pwindo = new PopupWindow(layout, x,900, true);
             pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
             btnClosePopup = (Button) layout.findViewById(R.id.btncmdcont);
             btnClosePopup.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     pwindo.dismiss();
+                    muestra_cmdtmp();
                 }
             });
 
@@ -319,10 +321,11 @@ public class platillos extends AppCompatActivity {
     private void inserta_producto(String prid,String prdesc){
 
         ContentValues cv = new ContentValues();
-        cv.put(DBhelper.CMD_SESION, 1);
+        cv.put(DBhelper.CMD_SESION, variables.sesion);
         cv.put(DBhelper.CMD_MESA,variables.mesa);
         cv.put(DBhelper.CMD_PRID, prid);
         cv.put(DBhelper.CMD_PRDESC, prdesc);
+        cv.put(DBhelper.CMD_CANTIDAD, 1);
         cv.put(DBhelper.CMD_COMENSAL, 1);
         cv.put(DBhelper.CMD_TIEMPO, 1);
         cv.put(DBhelper.CMD_STATUS, "A");
@@ -336,36 +339,34 @@ public class platillos extends AppCompatActivity {
 
     private void muestra_cmdtmp(){
 
-        String query = "SELECT PRDESC,CANTIDAD,COMENSAL,TIEMPO FROM " + DBhelper.TABLE_COMANDA + " WHERE MESA='" + variables.mesa + "'  AND STATUS='A' AND SESION='"+variables.sesion+"'";
-
+        String query = "SELECT ID,PRDESC,CANTIDAD,COMENSAL,TIEMPO FROM " + DBhelper.TABLE_COMANDA + " WHERE MESA='" + variables.mesa + "'  AND STATUS='A' AND SESION='"+variables.sesion+"'";
         Cursor rs = dbs.rawQuery(query, null);
+        ArrayList<datoscomanda> datos = new ArrayList<>();
 
         if (rs.moveToFirst()) {
-            String[] prdesc = new String[rs.getCount()];
-            Integer[] cant = new Integer[rs.getCount()];
-            Integer[] comensal = new Integer[rs.getCount()];
-            Integer[] tiempo = new Integer[rs.getCount()];
             do {
 
                 try {
-
-                    prdesc[rs.getPosition()]=rs.getString(rs.getColumnIndex(DBhelper.CMD_PRDESC));
-                    cant[rs.getPosition()]=rs.getInt(rs.getColumnIndex(DBhelper.CMD_CANTIDAD));
-                    comensal[rs.getPosition()]=rs.getInt(rs.getColumnIndex(DBhelper.CMD_COMENSAL));
-                    tiempo[rs.getPosition()]=rs.getInt(rs.getColumnIndex(DBhelper.CMD_TIEMPO));
+                    datos.add(new datoscomanda(
+                            rs.getString(rs.getColumnIndex(DBhelper.CMD_PRDESC)),
+                            rs.getInt(rs.getColumnIndex(DBhelper.CMD_CANTIDAD)),
+                            rs.getInt(rs.getColumnIndex(DBhelper.CMD_COMENSAL)),
+                            rs.getInt(rs.getColumnIndex(DBhelper.CMD_TIEMPO)),
+                            rs.getInt(rs.getColumnIndex(DBhelper.KEY_ID))
+                    ));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
             }while (rs.moveToNext());
 
-            LayoutInflater inflat = (LayoutInflater) platillos.this
+            /*LayoutInflater inflat = (LayoutInflater) platillos.this
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View layout = inflat.inflate(R.layout.activity_platillos,
-                    (ViewGroup) findViewById(R.id.laycmdread));
+                    (ViewGroup) findViewById(R.id.laycmdread));*/
 
-            ListView laycmdread = (ListView) layout.findViewById(R.id.listcmdread);
-            lcomandar_adapter adapter = new lcomandar_adapter(platillos.this,prdesc,cant,comensal,tiempo);
+            ListView laycmdread = (ListView) findViewById(R.id.listcmdread);
+            lcomandar_adapter adapter = new lcomandar_adapter(platillos.this,datos);
             laycmdread.setAdapter(adapter);
 
         }
