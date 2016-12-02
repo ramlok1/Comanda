@@ -84,6 +84,7 @@ public class DBhelper extends SQLiteOpenHelper {
 
     // TABLA COMANDA
     public static final String CMD_SESION = "SESION";
+    public static final String CMD_TRANSA = "TRANSA";
     public static final String CMD_MESA = "MESA";
     public static final String CMD_PRID = "PRID";
     public static final String CMD_PRDESC = "PRDESC";
@@ -105,7 +106,7 @@ public class DBhelper extends SQLiteOpenHelper {
     // CREAR TABLA COMANDA
     private static final String CREATE_TABLE_COMANDA = "CREATE TABLE "
             + TABLE_COMANDA + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + CMD_SESION + " INTEGER,"+ CMD_MESA + " TEXT,"
+            + CMD_SESION + " INTEGER,"+ CMD_MESA + " TEXT,"+ CMD_TRANSA + " TEXT,"
             + CMD_PRID + " TEXT,"+ CMD_PRDESC + " TEXT,"+ CMD_CANTIDAD + " INTEGER,"
             + CMD_COMENSAL + " INTEGER,"+ CMD_TIEMPO + " INTEGER,"
             + CMD_STATUS + " TEXT"

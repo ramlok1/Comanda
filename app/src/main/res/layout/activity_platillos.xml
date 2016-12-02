@@ -17,10 +17,19 @@
         app:title="Guest: Conrado Gonzalez"
         android:textAlignment="center" />
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar2"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/laybtns"></LinearLayout>
+
     <TextView
         android:text="@string/menu"
         android:layout_width="match_parent"
-        android:layout_below="@+id/toolbar2"
+        android:layout_below="@+id/laybtns"
         android:layout_height="wrap_content"
         android:id="@+id/labelMenu"
         android:textAlignment="center"

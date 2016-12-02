@@ -50,7 +50,12 @@ public class MainActivity extends AppCompatActivity{
         btnini.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 variables.mesero=txtuser.getText().toString();
+                variables.mesero=txtuser.getText().toString().trim();
+
+              /*  if (variables.mesero.equalsIgnoreCase("")){
+                    Toast.makeText(getApplicationContext(),"Usuario vacio",Toast.LENGTH_LONG).show();
+                }else{*/
+
                 dbhelper = new DBhelper(getApplicationContext());
                 SQLiteDatabase dbs = dbhelper.getWritableDatabase();
                 dbs.delete(DBhelper.TABLE_SESION, null, null);
@@ -64,26 +69,12 @@ public class MainActivity extends AppCompatActivity{
                 Intent intent = new Intent(getApplicationContext(), tables.class);
                 startActivity(intent);
 
+
             }
         });
         new datostablet().execute(); // Proceso verifica restaurante y conexion
 
 
-
-
-       /* listrest = (ListView) findViewById(R.id.listrest);
-        btnrest = (Button) findViewById(R.id.btnpvd);
-
-        listrestadp adapter = new listrestadp(this,vrest,imagenes);
-        listrest.setAdapter(adapter);
-        listrest.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(), tables.class);
-                intent.putExtra("rest",vrest[position]);
-                startActivity(intent);
-            }
-        });*/
 
 
 

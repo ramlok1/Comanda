@@ -249,8 +249,9 @@ public class platillos extends AppCompatActivity {
 
                     String dato1 = ((List<String>)v.getTag()).get(0).toString();
                     String dato2 = ((List<String>)v.getTag()).get(1).toString();
-                    inserta_producto(dato1,dato2);
-                    muestra_cmdtmp();
+                    //inserta_producto(dato1,dato2);
+                    popup_window(dato1,dato2);
+                   // muestra_cmdtmp();
 
 
                 }
@@ -317,6 +318,38 @@ public class platillos extends AppCompatActivity {
 
 
     }
+    private void popup_window(String dato1,String dato2) {
+        final PopupWindow pwindo;
+
+
+
+            LayoutInflater inflat = (LayoutInflater) platillos.this
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+            View layout = inflat.inflate(R.layout.popup_window,
+                    (ViewGroup) findViewById(R.id.popup_window_lp));
+
+
+
+
+            pwindo = new PopupWindow(layout, 500,400, true);
+            pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
+        /*
+            btnClosePopup = (Button) layout.findViewById(R.id.btncmdcont);
+            btnClosePopup.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    pwindo.dismiss();
+                    muestra_cmdtmp();
+                }
+            });*/
+
+        }
+
+
+
+
+
 
     private void inserta_producto(String prid,String prdesc){
 
@@ -365,6 +398,12 @@ public class platillos extends AppCompatActivity {
             View layout = inflat.inflate(R.layout.activity_platillos,
                     (ViewGroup) findViewById(R.id.laycmdread));*/
 
+            ListView laycmdread = (ListView) findViewById(R.id.listcmdread);
+            lcomandar_adapter adapter = new lcomandar_adapter(platillos.this,datos);
+            laycmdread.setAdapter(adapter);
+
+        }
+        else {
             ListView laycmdread = (ListView) findViewById(R.id.listcmdread);
             lcomandar_adapter adapter = new lcomandar_adapter(platillos.this,datos);
             laycmdread.setAdapter(adapter);
