@@ -20,6 +20,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class tables extends AppCompatActivity {
@@ -76,16 +78,27 @@ public class tables extends AppCompatActivity {
                     }
                     Button btn = new Button(this);
                     btn.setLayoutParams(new LinearLayout.LayoutParams(120, LinearLayout.LayoutParams.MATCH_PARENT));
+
                     btn.setText(rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_NAME))+"\n"+rs.getString(rs.getColumnIndex(DBhelper.KEY_HABI))+"\n"+rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_MESERO)));
                     btn.setTag(rs.getString(rs.getColumnIndex(DBhelper.KEY_ID)));
+                    btn.setBackgroundColor(getResources().getColor(R.color.ambar));
+
                     contenedor.addView(btn);
                     btn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
+
                             Intent intent = new Intent(getApplicationContext(), platillos.class);
                             Button b = (Button)v;
                             variables.mesa=b.getTag().toString();
+                            variables.cmd = busca_comanda();
+
+                            if ( variables.cmd==-1) {
+                                genera_comanda();
+                                variables.cmd = busca_comanda();
+
+                            }
                             startActivity(intent);
 
                         }
@@ -96,7 +109,7 @@ public class tables extends AppCompatActivity {
                         ban = false;
                     }
 
-                    //Va agregegando botones al contenedor.
+
 
 
                 }while (rs.moveToNext());
@@ -166,6 +179,39 @@ public class tables extends AppCompatActivity {
 
 
 
+
+    }
+    private void genera_comanda(){
+
+        dbhelper = new DBhelper(getApplicationContext());
+        SQLiteDatabase dbs = dbhelper.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(DBhelper.CE_SESION, variables.sesion);
+        cv.put(DBhelper.CE_MESA,variables.mesa);
+        cv.put(DBhelper.CE_MESERO, variables.mesero);
+        cv.put(DBhelper.CE_STATUS, "A");
+        dbs.insert(DBhelper.TABLE_COMANDAENC, null, cv);
+
+    }
+    private int busca_comanda(){
+
+        int cmd=-1;
+
+        dbhelper = new DBhelper(getApplicationContext());
+        SQLiteDatabase dbs = dbhelper.getWritableDatabase();
+
+        String query = "SELECT ID FROM " + DBhelper.TABLE_COMANDAENC + " WHERE CE_SESION='" + variables.sesion + "' AND CE_MESA='" + variables.mesa + "'";
+
+        Cursor rs = dbs.rawQuery(query, null);
+        if (rs.moveToFirst()) {
+            do {
+                cmd = rs.getInt(rs.getColumnIndex(DBhelper.KEY_ID));
+            }while (rs.moveToNext());
+
+        }
+
+        return cmd;
 
     }
 

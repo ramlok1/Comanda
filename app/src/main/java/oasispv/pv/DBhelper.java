@@ -18,11 +18,19 @@ public class DBhelper extends SQLiteOpenHelper {
     // Table Names
     public static final String TABLE_PVCAT1 = "PVCAT1";
     public static final String TABLE_PVCAT2 = "PVCAT2";
+    public static final String TABLE_PVPRODUCTOSMODI = "PVPRODUCTOSMODI";
+    public static final String TABLE_PVMODOS = "PVMODOS";
+    public static final String TABLE_PVMODOSG = "PVMODOSG";
+    public static final String TABLE_PVMODCG = "PVMODOCG";
+    public static final String TABLE_PVGUAR = "PVGUAR";
+    public static final String TABLE_PVPRODUCTOSMODOSG = "PVPRODUCTOSMODOSG";
     public static final String TABLE_PVMENUS = "PVMENUS";
     public static final String TABLE_PVMESA = "PVMESA";
     public static final String TABLE_CONNECT = "CONEXION";
     public static final String TABLE_COMANDA = "COMANDA";
     public static final String TABLE_SESION = "SESION";
+    public static final String TABLE_PRMOD = "PRMOD";
+    public static final String TABLE_COMANDAENC = "COMANDAENC";
 
     // Common column names
     public static final String KEY_ID = "id";
@@ -61,6 +69,8 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String KEY_PM_FAMILIA = "PM_FAMILIA";
     public static final String KEY_PM_GRUPOPR = "PM_GRUPOPR";
     public static final String KEY_PM_SUBFAMILIAPR = "PM_SUBFAMILIAPR";
+    public static final String KEY_PM_MODI = "PM_MODI";
+    public static final String KEY_PM_GUAR = "PM_GUAR";
 
     // TABLA PVMESA
     public static final String KEY_MOVI = "MOVI";
@@ -81,6 +91,7 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String KEY_PW = "PW";
     public static final String KEY_CN = "CN";
     public static final String KEY_IP = "IP";
+    public static final String KEY_MODI = "MODI";
 
     // TABLA COMANDA
     public static final String CMD_SESION = "SESION";
@@ -99,10 +110,97 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String SES_FASE = "FASE";
     public static final String SES_STATUS = "STATUS";
 
+    // TABLA COMANDAENC
+    public static final String CE_SESION = "CE_SESION";
+    public static final String CE_MESA = "CE_MESA";
+    public static final String CE_MESERO = "CE_MESERO";
+    public static final String CE_STATUS = "CE_STATUS";
 
+    // TABLA PVPRODUCTOSMODI
+    public static final String MP_PRODUCTO = "MP_PRODUCTO";
+    public static final String MP_MODI = "MP_MODI";
+    public static final String MP_DEFAULT = "MP_DEFAULT";
+
+
+    // TABLA PVMODOS
+    public static final String MD_GRUPO = "MD_GRUPO";
+    public static final String MD_MODO = "MD_MODO";
+    public static final String MD_DESC = "MD_DESC";
+    public static final String MD_DEFAULT = "MD_DEFAULT";
+
+    // TABLA PVMODOSG
+    public static final String MG_GRUPO = "MG_GRUPO";
+    public static final String MG_DESC = "MG_DESC";
+    public static final String MG_MANDAT = "MG_MANDAT";
+
+    // TABLA PVMODOCG
+    public static final String CG_COMANDA = "CG_COMANDA";
+    public static final String CG_PRODUCTO = "CG_PRODUCTO";
+    public static final String CG_GRUPO= "CG_GRUPO";
+    public static final String CG_MODO= "CG_MODO";
+    public static final String CG_SELECCION= "CG_SELECCION";
+
+    // TABLA PVMODGUAR
+    public static final String GU_COMANDA = "GU_COMANDA";
+    public static final String GU_PRODUCTO = "GU_PRODUCTO";
+    public static final String GU_GUAR = "GU_GUAR";
+    public static final String GU_SELECCION = "GU_SELECCION";
+
+
+    // TABLA PVPRODUCTOSMODOSG
+    public static final String GP_PRODUCTO = "GP_PRODUCTO";
+    public static final String GP_GRUPO = "GP_GRUPO";
+    public static final String GP_GRUPO_DESC = "GP_GRUPO_DESC";
+
+    // TABLA PRMOD
+    public static final String PD_PRODUCTO = "PD_PRODUCTO";
+    public static final String PD_DESC = "PD_DESC";
 
 
     // Table Create Statements
+    // CREAR TABLA PRMOD
+    private static final String CREATE_TABLE_PRMOD = "CREATE TABLE "
+            + TABLE_PRMOD + "(" + PD_PRODUCTO + " TEXT,"
+            + PD_DESC + " TEXT"
+            + ")";
+    // CREAR TABLA COMANDAENC
+    private static final String CREATE_TABLE_COMANDAENC = "CREATE TABLE "
+            + TABLE_COMANDAENC + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
+            + CE_SESION + " TEXT,"+ CE_MESA + " TEXT,"
+            + CE_MESERO + " TEXT,"+ CE_STATUS + " TEXT"
+            + ")";
+    // CREAR TABLA PVPRODUCTOSMODOSG
+    private static final String CREATE_TABLE_PVPRODUCTOSMODOSG = "CREATE TABLE "
+            + TABLE_PVPRODUCTOSMODOSG + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
+            + GP_PRODUCTO + " TEXT,"+ GP_GRUPO + " TEXT,"+ GP_GRUPO_DESC + " TEXT"
+            + ")";
+    // CREAR TABLA PVMODOS
+    private static final String CREATE_TABLE_PVMODOS = "CREATE TABLE "
+            + TABLE_PVMODOS + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
+            + MD_GRUPO + " TEXT,"+ MD_MODO + " TEXT,"+ MD_DESC + " TEXT,"
+            + MD_DEFAULT + " TEXT"
+            + ")";
+    // CREAR TABLA PVMODCG
+    private static final String CREATE_TABLE_PVMODCG = "CREATE TABLE "
+            + TABLE_PVMODCG + "(" + CG_COMANDA + " INTEGER,"
+            + CG_PRODUCTO + " TEXT,"+ CG_GRUPO + " TEXT,"+ CG_MODO + " TEXT,"
+            + CG_SELECCION + " TEXT"
+            + ")";
+    // CREAR TABLA PVGUAR
+    private static final String CREATE_TABLE_PVGUAR = "CREATE TABLE "
+            + TABLE_PVGUAR + "(" + GU_COMANDA + " INTEGER,"
+            + GU_PRODUCTO + " TEXT,"+ GU_GUAR + " TEXT,"+ GU_SELECCION + " TEXT"
+            + ")";
+    // CREAR TABLA PVMODOSG
+    private static final String CREATE_TABLE_PVMODOSG = "CREATE TABLE "
+            + TABLE_PVMODOSG + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
+            + MG_GRUPO + " TEXT,"+ MG_DESC + " TEXT,"+ MG_MANDAT + " TEXT"
+            + ")";
+    // CREAR TABLA PVPRODUCTOSMODI
+    private static final String CREATE_TABLE_PVPRODUCTOSMODI = "CREATE TABLE "
+            + TABLE_PVPRODUCTOSMODI + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
+            + MP_PRODUCTO + " TEXT,"+ MP_MODI + " TEXT,"+ MP_DEFAULT + " TEXT"
+            + ")";
     // CREAR TABLA COMANDA
     private static final String CREATE_TABLE_COMANDA = "CREATE TABLE "
             + TABLE_COMANDA + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
@@ -139,7 +237,7 @@ public class DBhelper extends SQLiteOpenHelper {
             + KEY_PM_PRECIO + " INTEGER,"+ KEY_PM_CARTA + " TEXT,"
             + KEY_PM_COMISION + " INTEGER,"+ KEY_PM_PROPINA + " INTEGER,"
             + KEY_PM_FAMILIA + " TEXT,"+ KEY_PM_GRUPOPR + " TEXT,"
-            + KEY_PM_SUBFAMILIAPR + " TEXT"
+            + KEY_PM_SUBFAMILIAPR + " TEXT,"+ KEY_PM_MODI + " TEXT,"+ KEY_PM_GUAR + " TEXT"
             + ")";
 
     // CREAR TABLA PVMESA
@@ -153,7 +251,7 @@ public class DBhelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_CONEXION = "CREATE TABLE "
             + TABLE_CONNECT + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
             + KEY_TIPO + " TEXT,"+ KEY_MOVI_C + " TEXT,"+KEY_FASE_C+" TEXT,"+ KEY_NAME_C + " TEXT,"+KEY_UN+" TEXT,"+KEY_PW+" TEXT,"+KEY_CN+" TEXT,"
-            + KEY_IP + " TEXT"
+            + KEY_IP + " TEXT,"+ KEY_MODI + " TEXT"
             + ")";
     // CREAR TABLA SESION
     private static final String CREATE_TABLE_SESION = "CREATE TABLE "
@@ -178,6 +276,15 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_CONEXION);
         db.execSQL(CREATE_TABLE_COMANDA);
         db.execSQL(CREATE_TABLE_SESION);
+        db.execSQL(CREATE_TABLE_PVPRODUCTOSMODI);
+        db.execSQL(CREATE_TABLE_PVMODOS);
+        db.execSQL(CREATE_TABLE_PVMODOSG);
+        db.execSQL(CREATE_TABLE_PVMODCG);
+        db.execSQL(CREATE_TABLE_PVGUAR);
+        db.execSQL(CREATE_TABLE_PRMOD);
+        db.execSQL(CREATE_TABLE_COMANDAENC);
+        db.execSQL(CREATE_TABLE_PVPRODUCTOSMODOSG);
+
 
     }
 
@@ -191,7 +298,14 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONNECT);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMANDA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SESION);
-
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PVPRODUCTOSMODI);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PVMODOS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PVMODOSG);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PVMODCG);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PVGUAR);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRMOD);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMANDAENC);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PVPRODUCTOSMODOSG);
 
 
         // create new tables

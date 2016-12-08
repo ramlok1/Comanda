@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context="oasispv.pv.tables">
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
@@ -15,7 +13,24 @@
         android:minHeight="?attr/actionBarSize"
         android:id="@+id/toolbar" />
 
-    <include layout="@layout/content_tables"
-        android:id="@+id/include" />
+    <Button
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnxsesion"
 
-</android.support.design.widget.CoordinatorLayout>
+
+        android:background="@android:drawable/ic_lock_power_off"
+        android:layout_above="@+id/btnlmaster"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        tools:ignore="RelativeOverlap" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        android:id="@+id/btnlmaster"></LinearLayout>
+
+</RelativeLayout>

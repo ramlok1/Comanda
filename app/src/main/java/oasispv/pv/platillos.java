@@ -15,11 +15,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -57,7 +61,7 @@ public class platillos extends AppCompatActivity {
         btncomanda.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            popup();
+            popup_comanda();
 
             }
         });
@@ -65,7 +69,7 @@ public class platillos extends AppCompatActivity {
         dbs = dbhelper.getWritableDatabase();
         ActionBar backbtn = getSupportActionBar();
         backbtn.setDisplayHomeAsUpEnabled(true);
-
+        muestra_cmdtmp();
         scrollcat1();
     }
 
@@ -223,7 +227,7 @@ public class platillos extends AppCompatActivity {
 
 
 
-        String query = "SELECT PM_PRODUCTO,PM_PRODUCTO_DESC FROM " + DBhelper.TABLE_PVMENUS + " WHERE PM_MOVI='" + movi + "' AND PM_FASE='" + fase + "' AND PM_CAT1='" + cat1 + "' AND PM_CAT2='"+cat2+"' ";
+        String query = "SELECT PM_PRODUCTO,PM_PRODUCTO_DESC,PM_MODI FROM " + DBhelper.TABLE_PVMENUS + " WHERE PM_MOVI='" + movi + "' AND PM_FASE='" + fase + "' AND PM_CAT1='" + cat1 + "' AND PM_CAT2='"+cat2+"' ";
 
         Cursor rs = dbs.rawQuery(query, null);
         if (rs.moveToFirst()) {
@@ -236,11 +240,12 @@ public class platillos extends AppCompatActivity {
                     btnsContainer.addView(contenedor);
                 }
                 Button btn = new Button(this);
-                List<String> data = new ArrayList<String>();
+                List<String> data = new ArrayList<>();
                 btn.setLayoutParams(new LinearLayout.LayoutParams(120, LinearLayout.LayoutParams.MATCH_PARENT));
                 btn.setText(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_PRODUCTO_DESC)));
                 data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_PRODUCTO)));
                 data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_PRODUCTO_DESC)));
+                data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_MODI)));
                 btn.setTag(data);
                 contenedor.addView(btn);
                 btn.setOnClickListener(new View.OnClickListener() {
@@ -249,9 +254,16 @@ public class platillos extends AppCompatActivity {
 
                     String dato1 = ((List<String>)v.getTag()).get(0).toString();
                     String dato2 = ((List<String>)v.getTag()).get(1).toString();
-                    //inserta_producto(dato1,dato2);
-                    popup_window(dato1,dato2);
-                   // muestra_cmdtmp();
+                    String dato3 = ((List<String>)v.getTag()).get(2).toString();
+
+                    if (variables.modipv.equalsIgnoreCase("S")) {
+                        popup_window(dato1, dato2,dato3);
+                    }else{
+                        inserta_producto(dato1,dato2,1,1);
+                        muestra_cmdtmp();
+                    }
+
+
 
 
                 }
@@ -270,7 +282,7 @@ public class platillos extends AppCompatActivity {
         }
     }
 
-    private void popup() {
+    private void popup_comanda() {
          final PopupWindow pwindo;
         String query = "SELECT ID,PRDESC,CANTIDAD,COMENSAL,TIEMPO FROM " + DBhelper.TABLE_COMANDA + " WHERE MESA='" + variables.mesa + "'  AND STATUS='A' AND SESION='"+variables.sesion+"'";
         Cursor rs = dbs.rawQuery(query, null);
@@ -318,49 +330,108 @@ public class platillos extends AppCompatActivity {
 
 
     }
-    private void popup_window(String dato1,String dato2) {
-        final PopupWindow pwindo;
+    private void popup_window( final String dato1,final String dato2, final String modi) {
 
+        final PopupWindow pwindo;
 
 
             LayoutInflater inflat = (LayoutInflater) platillos.this
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            View layout = inflat.inflate(R.layout.popup_window,
+            final View layout = inflat.inflate(R.layout.popup_window,
                     (ViewGroup) findViewById(R.id.popup_window_lp));
 
 
 
 
-            pwindo = new PopupWindow(layout, 500,400, true);
+            pwindo = new PopupWindow(layout, 600,450, true);
             pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
-        /*
-            btnClosePopup = (Button) layout.findViewById(R.id.btncmdcont);
+
+            btnClosePopup = (Button) layout.findViewById(R.id.btnxpop);
             btnClosePopup.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     pwindo.dismiss();
-                    muestra_cmdtmp();
+
                 }
-            });*/
+            });
+        LinearLayout contenedorpop = (LinearLayout) layout.findViewById(R.id.laypopbtn);
+        LinearLayout contenedor = new LinearLayout(this);
+        contenedor.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 100));
+        contenedor.setOrientation((LinearLayout.HORIZONTAL));
+        contenedorpop.addView(contenedor);
+
+        final EditText txtcomensal= (EditText) layout.findViewById(R.id.txtvncomensal);
+
+
+
+        /////////////////TIEMPO
+
+        final TextView txttiempo= (TextView) layout.findViewById(R.id.txtvntiempo);
+        txttiempo.setText("1");
+        Button btnmenost = (Button) layout.findViewById(R.id.btnmenost);
+        btnmenost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(txttiempo.getText().equals("1")) {
+                    txttiempo.setText("1");
+                }else{
+                    int tiempo = Integer.parseInt(txttiempo.getText().toString());
+                    tiempo=tiempo-1;
+                    txttiempo.setText(Integer.toString(tiempo));
+                }
+
+            }
+        });
+        Button  btnmast= (Button) layout.findViewById(R.id.btnmast);
+        btnmast.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(txttiempo.getText().equals("3")) {
+                    txttiempo.setText("3");
+                }else{
+                    int tiempo = Integer.parseInt(txttiempo.getText().toString());
+                    tiempo=tiempo+1;
+                    txttiempo.setText(Integer.toString(tiempo));
+                }
+
+            }
+        });
+
+        Button  btncont= (Button) layout.findViewById(R.id.btncont);
+        btncont.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                 variables.comensal = Integer.parseInt(txtcomensal.getText().toString());
+                 variables.tiempo = Integer.parseInt(txttiempo.getText().toString());
+                if (modi.equalsIgnoreCase("N")) {
+                    inserta_producto(dato1, dato2, variables.comensal, variables.tiempo);
+                    muestra_cmdtmp();
+                    pwindo.dismiss();
+                }else{
+
+                    modificadores(dato1,dato2,modi,layout,pwindo);
+                }
+
+
+            }
+        });
+
+
 
         }
 
 
-
-
-
-
-    private void inserta_producto(String prid,String prdesc){
+    private void inserta_producto(String prid,String prdesc, int comensal,int tiempo){
 
         ContentValues cv = new ContentValues();
         cv.put(DBhelper.CMD_SESION, variables.sesion);
         cv.put(DBhelper.CMD_MESA,variables.mesa);
+        cv.put(DBhelper.CMD_TRANSA,variables.cmd);
         cv.put(DBhelper.CMD_PRID, prid);
         cv.put(DBhelper.CMD_PRDESC, prdesc);
         cv.put(DBhelper.CMD_CANTIDAD, 1);
-        cv.put(DBhelper.CMD_COMENSAL, 1);
-        cv.put(DBhelper.CMD_TIEMPO, 1);
+        cv.put(DBhelper.CMD_COMENSAL, comensal);
+        cv.put(DBhelper.CMD_TIEMPO, tiempo);
         cv.put(DBhelper.CMD_STATUS, "A");
         dbs.insert(DBhelper.TABLE_COMANDA, null, cv);
 
@@ -407,6 +478,132 @@ public class platillos extends AppCompatActivity {
             ListView laycmdread = (ListView) findViewById(R.id.listcmdread);
             lcomandar_adapter adapter = new lcomandar_adapter(platillos.this,datos);
             laycmdread.setAdapter(adapter);
+
+        }
+
+    }
+
+    private void modificadores(final String pr,final String dato2,final String modi, final View layout, final PopupWindow pwindo) {
+
+        LinearLayout btnsContainer = (LinearLayout) layout.findViewById(R.id.laypopbtn);
+        btnsContainer.removeAllViews();
+
+        LinearLayout contenedor1 = null;
+        LinearLayout contenedor2 = null;
+
+        contenedor1 = new LinearLayout(this);
+        ListView listamg = new ListView(this);
+        listamg.setId(R.id.listamg);
+        contenedor1.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 300));
+        contenedor1.setOrientation((LinearLayout.HORIZONTAL));
+        contenedor1.setId(R.id.laylistamod);
+        contenedor1.addView(listamg);
+        contenedor2 = new LinearLayout(this);
+        contenedor2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 100));
+        contenedor2.setOrientation((LinearLayout.HORIZONTAL));
+        btnsContainer.addView(contenedor1);
+        btnsContainer.addView(contenedor2);
+
+        ////boton atras
+        Button btnatras = new Button(this);
+        btnatras.setLayoutParams(new LinearLayout.LayoutParams(120, LinearLayout.LayoutParams.MATCH_PARENT));
+        btnatras.setText("ATRAS");
+        contenedor2.addView(btnatras);
+        btnatras.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pwindo.dismiss();
+                popup_window(pr,dato2,modi);
+
+
+            }
+        });
+
+
+        String query = "SELECT GP_GRUPO,GP_GRUPO_DESC FROM " + DBhelper.TABLE_PVPRODUCTOSMODOSG + " WHERE GP_PRODUCTO='" + pr + "'";
+
+        Cursor rs = dbs.rawQuery(query, null);
+        if (rs.moveToFirst()) {
+            String mod1 = rs.getString(rs.getColumnIndex(DBhelper.GP_GRUPO));
+            do {
+                String grupo = rs.getString(rs.getColumnIndex(DBhelper.GP_GRUPO));
+                String gdesc= rs.getString(rs.getColumnIndex(DBhelper.GP_GRUPO_DESC));
+
+                Button btn = new Button(this);
+                btn.setLayoutParams(new LinearLayout.LayoutParams(120, LinearLayout.LayoutParams.MATCH_PARENT));
+                btn.setText(gdesc);
+                btn.setTag(grupo) ;
+                contenedor2.addView(btn);
+                btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Button b = (Button)v;
+                        String txt = b.getTag().toString();
+                        muestra_modificador(txt,layout);
+
+
+                    }
+                });
+
+                //Va agregegando botones al contenedor.
+
+
+            }while (rs.moveToNext());
+                        muestra_modificador(mod1,layout);
+        }
+        ////boton guarni
+        Button btnguar = new Button(this);
+        btnguar.setLayoutParams(new LinearLayout.LayoutParams(120, LinearLayout.LayoutParams.MATCH_PARENT));
+        btnguar.setText("COMPLEMENTOS");
+        contenedor2.addView(btnguar);
+        btnguar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+            }
+        });
+        ////boton continuar
+        Button btncont = new Button(this);
+        btncont.setLayoutParams(new LinearLayout.LayoutParams(120, LinearLayout.LayoutParams.MATCH_PARENT));
+        btncont.setText("CONTINUAR");
+        contenedor2.addView(btncont);
+        btncont.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                inserta_producto(pr, dato2, variables.comensal, variables.tiempo);
+                muestra_cmdtmp();
+                pwindo.dismiss();
+
+            }
+        });
+
+    }
+    private void muestra_modificador(final String mod,View layout) {
+
+
+        String query = "SELECT MD_DESC FROM " + DBhelper.TABLE_PVMODOS + " WHERE MD_GRUPO='" + mod + "'";
+        Cursor rs = dbs.rawQuery(query, null);
+        ArrayList<String> datos = new ArrayList<>();
+
+        if (rs.moveToFirst()) {
+            do {
+
+                try {
+                    datos.add(rs.getString(rs.getColumnIndex(DBhelper.MD_DESC)));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }while (rs.moveToNext());
+
+
+
+            ListView laymod = (ListView) layout.findViewById(R.id.listamg);
+            laymod.setAdapter(null);
+            lmg_adapter adapter = new lmg_adapter(platillos.this,datos);
+            laymod.setAdapter(adapter);
 
         }
 

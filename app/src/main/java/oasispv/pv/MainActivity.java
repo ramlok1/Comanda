@@ -4,9 +4,11 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.StrictMode;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -19,7 +21,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity{
@@ -109,6 +112,7 @@ public class MainActivity extends AppCompatActivity{
             verificatablet();
              db = new ConnectOra(variables.ip,variables.cn,variables.un,variables.pw);
             resp=llenatablas();
+            verifica_mod_guar();
 
             return resp;
         }
@@ -128,6 +132,9 @@ public class MainActivity extends AppCompatActivity{
         dbs.delete(DBhelper.TABLE_PVCAT1, null, null);
         dbs.delete(DBhelper.TABLE_PVCAT2, null, null);
         dbs.delete(DBhelper.TABLE_PVMENUS, null, null);
+        dbs.delete(DBhelper.TABLE_PVMODOS, null, null);
+        dbs.delete(DBhelper.TABLE_PVPRODUCTOSMODI, null, null);
+        dbs.delete(DBhelper.TABLE_PVPRODUCTOSMODOSG, null, null);
 
         String querycat1 = "select CAT1_MOVI, CAT1_FASE, CAT1_CARTA, CAT1, CAT1_IMAGEN, CAT1_DESC, CAT1_POS" +
                 " FROM PVCAT1 where CAT1_MOVI='" + movi + "' and CAT1_FASE='" + fase + "' ";
@@ -136,10 +143,101 @@ public class MainActivity extends AppCompatActivity{
         String querycat2 = "SELECT CAT2_MOVI, CAT2_FASE, CAT2_CARTA, CAT2_CAT1, CAT2, CAT2_IMAGEN, CAT2_DESC, CAT2_POS " +
                 "FROM PVCAT2,PVCAT1 WHERE CAT2_MOVI='" + movi + "' AND CAT2_FASE='" + fase + "' AND CAT1_MOVI=CAT2_MOVI AND CAT1_FASE=CAT2_FASE AND CAT2_CAT1=CAT1";
 
+        String queryPVMODI = "SELECT MP_PRODUCTO, MP_MODI, MP_DEFAULT " +
+                "FROM PVPRODUCTOSMODI";
+
+        String queryPVMODOS = "SELECT MD_GRUPO, MD_MODO, MD_DESC, MD_DEFAULT " +
+                "FROM PVMODOS";
+
+        String queryPVMODOSG = "SELECT MG_GRUPO, MG_DESC, MG_MANDAT " +
+                "FROM PVMODOSG";
+
+        String queryPRMOD = "SELECT PR_PRODUCTO,PR_DESC " +
+                "FROM PVPRODUCTOS WHERE PR_MODI='S'";
+
+        String queryPVMODOSGPR = " SELECT GP_PRODUCTO, GP_GRUPO,MG_DESC " +
+                "FROM PVPRODUCTOSMODOSG,PVMODOSG WHERE MG_GRUPO=GP_GRUPO";
+
+
         String querypvmenus = " SELECT PM_MOVI, PM_FASE, PM_CAT1, PM_CAT2, PM_PRODUCTO,PR_DESC, PM_POS, PM_PRECIO, PM_CARTA, PM_COMISION, PM_PROPINA, PM_FAMILIA, PM_GRUPOPR, PM_SUBFAMILIAPR" +
-                " FROM PVMENUS,PVPRODUCTOS WHERE PM_MOVI='" + movi + "' AND PM_FASE='" + fase + "' AND PR_PRODUCTO=PM_PRODUCTO";
+                " FROM PVMENUS,PVPRODUCTOS WHERE PM_MOVI='" + movi + "' AND PM_FASE='" + fase + "' AND PR_PRODUCTO=PM_PRODUCTO AND PR_ACTIVO='S'";
 
 
+        //////INSERTA PVPRODUCTOSMODOSG
+        try {
+            stmt = conexion.createStatement();
+            ResultSet rs = stmt.executeQuery(queryPVMODOSGPR);
+            while (rs.next()) {
+                ContentValues cv = new ContentValues();
+                cv.put(DBhelper.GP_PRODUCTO, rs.getString("GP_PRODUCTO"));
+                cv.put(DBhelper.GP_GRUPO, rs.getString("GP_GRUPO"));
+                cv.put(DBhelper.GP_GRUPO_DESC, rs.getString("MG_DESC"));
+                dbs.insert(DBhelper.TABLE_PVPRODUCTOSMODOSG, null, cv);
+            }
+
+        } catch (SQLException e) {
+            res = "error pvcat1 " + e;
+        }
+        //////INSERTA PVMODOSG
+        try {
+
+            ResultSet rs = stmt.executeQuery(queryPVMODOSG);
+            while (rs.next()) {
+                ContentValues cv = new ContentValues();
+                cv.put(DBhelper.MG_GRUPO, rs.getString("MG_GRUPO"));
+                cv.put(DBhelper.MG_DESC, rs.getString("MG_DESC"));
+                cv.put(DBhelper.MG_MANDAT, rs.getString("MG_MANDAT"));
+                dbs.insert(DBhelper.TABLE_PVMODOSG, null, cv);
+            }
+
+        } catch (SQLException e) {
+            res = "error pvcat1 " + e;
+        }
+        //////INSERTA PRMOD
+        try {
+
+            ResultSet rs = stmt.executeQuery(queryPRMOD);
+            while (rs.next()) {
+                ContentValues cv = new ContentValues();
+                cv.put(DBhelper.PD_PRODUCTO, rs.getString("PR_PRODUCTO"));
+                cv.put(DBhelper.PD_DESC, rs.getString("PR_DESC"));
+                dbs.insert(DBhelper.TABLE_PRMOD, null, cv);
+            }
+
+        } catch (SQLException e) {
+            res = "error pvcat1 " + e;
+        }
+        //////INSERTA PVMODOS
+        try {
+
+            ResultSet rs = stmt.executeQuery(queryPVMODOS);
+            while (rs.next()) {
+                ContentValues cv = new ContentValues();
+                cv.put(DBhelper.MD_GRUPO, rs.getString("MD_GRUPO"));
+                cv.put(DBhelper.MD_MODO, rs.getString("MD_MODO"));
+                cv.put(DBhelper.MD_DESC, rs.getString("MD_DESC"));
+                cv.put(DBhelper.MD_DEFAULT, rs.getString("MD_DEFAULT"));
+                dbs.insert(DBhelper.TABLE_PVMODOS, null, cv);
+            }
+
+        } catch (SQLException e) {
+            res = "error pvcat1 " + e;
+        }
+        //////INSERTA PVPRODUCTOSMODI
+        try {
+
+            ResultSet rs = stmt.executeQuery(queryPVMODI);
+            while (rs.next()) {
+                ContentValues cv = new ContentValues();
+                cv.put(DBhelper.MP_PRODUCTO, rs.getString("MP_PRODUCTO"));
+                cv.put(DBhelper.MP_MODI, rs.getString("MP_MODI"));
+                cv.put(DBhelper.MP_DEFAULT, rs.getString("MP_DEFAULT"));
+                dbs.insert(DBhelper.TABLE_PVPRODUCTOSMODI, null, cv);
+            }
+
+        } catch (SQLException e) {
+            res = "error pvcat1 " + e;
+        }
         //////INSERTA PVCAT1
         try {
             stmt = conexion.createStatement();
@@ -163,7 +261,7 @@ public class MainActivity extends AppCompatActivity{
         ///////INSERTA PVCAT2
 
         try {
-            //stmt = conexion.createStatement();
+
             ResultSet rs = stmt.executeQuery(querycat2);
             while (rs.next()) {
                 ContentValues cv = new ContentValues();
@@ -200,6 +298,7 @@ public class MainActivity extends AppCompatActivity{
                 cv.put(DBhelper.KEY_PM_FAMILIA, rs.getString("PM_FAMILIA"));
                 cv.put(DBhelper.KEY_PM_GRUPOPR, rs.getString("PM_GRUPOPR"));
                 cv.put(DBhelper.KEY_PM_SUBFAMILIAPR, rs.getString("PM_SUBFAMILIAPR"));
+                cv.put(DBhelper.KEY_PM_MODI,"N");
                 dbs.insert(DBhelper.TABLE_PVMENUS, null, cv);
             }
             stmt.close();
@@ -232,6 +331,7 @@ public class MainActivity extends AppCompatActivity{
                 variables.cn=c.getString(c.getColumnIndex(DBhelper.KEY_CN));
                 variables.un=c.getString(c.getColumnIndex(DBhelper.KEY_UN));
                 variables.pw=c.getString(c.getColumnIndex(DBhelper.KEY_PW));
+                variables.modipv=c.getString(c.getColumnIndex(DBhelper.KEY_MODI));
                 variables.movi_desc=c.getString(c.getColumnIndex(DBhelper.KEY_NAME_C));
 
             } else {// Busca valores de PV de Tablet en Cronos
@@ -251,8 +351,10 @@ public class MainActivity extends AppCompatActivity{
 
                     try {
                         stmt = conexion.createStatement();
-                        String selectpv = "select PT_NOMBRE, PT_PV, PT_FASE, PT_UN, PT_CN, PT_PW, PT_IP_PV" +
-                                " FROM PVXTABLET where PT_MAC='" + mac + "'";
+                       /* String selectpv = "select PT_NOMBRE, PT_PV, PT_FASE, PT_UN, PT_CN, PT_PW, PT_IP_PV" +
+                                " FROM PVXTABLET where PT_MAC='" + mac + "'";*/
+                        String selectpv = "select PT_NOMBRE, PT_PV, PT_FASE, PT_UN, PT_CN, PT_PW, PT_IP_PV,PT_MODI" +
+                                " FROM PVXTABLET where PT_MAC='"+mac+"'";
 
                         ResultSet rs = stmt.executeQuery(selectpv);
                         while (rs.next()) {
@@ -265,6 +367,7 @@ public class MainActivity extends AppCompatActivity{
                             cv.put(DBhelper.KEY_CN, rs.getString("PT_CN"));
                             cv.put(DBhelper.KEY_PW, rs.getString("PT_PW"));
                             cv.put(DBhelper.KEY_IP, rs.getString("PT_IP_PV"));
+                            cv.put(DBhelper.KEY_MODI, rs.getString("PT_MODI"));
                             cv.put(DBhelper.KEY_NAME_C, rs.getString("PT_NOMBRE"));
                             dbs.insert(DBhelper.TABLE_CONNECT, null, cv);
 
@@ -275,6 +378,7 @@ public class MainActivity extends AppCompatActivity{
                             variables.cn=rs.getString("PT_CN");
                             variables.un=rs.getString("PT_UN");
                             variables.pw=rs.getString("PT_PW");
+                            variables.modipv=rs.getString("PT_MODI");
                             variables.movi_desc=rs.getString("PT_NOMBRE");
                         }
                         stmt.close();
@@ -314,6 +418,37 @@ public class MainActivity extends AppCompatActivity{
             return res;
 
 
+    }
+    private void verifica_mod_guar() {
+
+
+        dbhelper = new DBhelper(getApplicationContext());
+        SQLiteDatabase dbs = dbhelper.getReadableDatabase();
+
+        String query = "SELECT PM_PRODUCTO FROM " + DBhelper.TABLE_PVMENUS + " WHERE PM_MOVI='" + variables.movi + "' AND PM_FASE='" + variables.fase + "'";
+
+        Cursor rs = dbs.rawQuery(query, null);
+        if (rs.moveToFirst()) {
+            do {
+                String pr =rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_PRODUCTO));
+
+                long countmd=DatabaseUtils.queryNumEntries(dbs,DBhelper.TABLE_PVPRODUCTOSMODOSG,""+DBhelper.GP_PRODUCTO+"="+"'"+pr+"'");
+                long countgu=DatabaseUtils.queryNumEntries(dbs,DBhelper.TABLE_PVPRODUCTOSMODI,""+DBhelper.MP_PRODUCTO+"="+"'"+pr+"'");
+
+                if (countmd>0){
+                    ContentValues cv = new ContentValues();
+                    cv.put(DBhelper.KEY_PM_MODI,"S");
+                    dbs.update(DBhelper.TABLE_PVMENUS,cv,""+DBhelper.KEY_PM_PRODUCTO+"="+"'"+pr+"'",null);
+                }
+                if (countgu>0){
+                    ContentValues cv = new ContentValues();
+                    cv.put(DBhelper.KEY_PM_GUAR,"S");
+                    dbs.update(DBhelper.TABLE_PVMENUS,cv,""+DBhelper.KEY_PM_PRODUCTO+"="+"'"+pr+"'",null);
+                }
+
+            }while (rs.moveToNext());
+
+        }
     }
 
 }

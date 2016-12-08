@@ -15,7 +15,11 @@ public  class variables {
     public static String mesero;
     public static String movi_desc;
     public static String mesa;
-    public static Integer sesion;
+    public static int sesion;
+    public static int comensal;
+    public static int tiempo;
+    public static int cmd;
+    public static String modipv;
 
 
 

@@ -11,8 +11,9 @@
     <color name="jumbo">#888888</color>
     <color name="aluminum">#999999</color>
     <color name="base">#aaaaaa</color>
-    <color name="iron">#CCCCCC</color>
+    <color name="iron">#f0e9e9</color>
     <color name="white">#ffffff</color>
     <color name="vpastel">#98cb4a</color>
     <color name="rpastel">#f15f74</color>
+    <color name="ambar">#e7b10f</color>
 </resources>

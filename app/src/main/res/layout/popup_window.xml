@@ -1,32 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/popup_window_lp">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="600dp"
+    android:layout_height="450dp"
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="560dp"
-        android:layout_marginBottom="60dp"></LinearLayout>
+    android:id="@+id/popup_window_lp"
+    android:baselineAligned="false">
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/textView4"
+            android:layout_weight="1"
+            android:textStyle="normal|bold"
+            android:textAlignment="center"
+            android:textSize="30sp"
+            tools:ignore="InefficientWeight" />
 
         <Button
-            android:text="atras"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btnbk"
-            android:layout_marginEnd="50dp" />
-
-        <Button
-            android:text="adelante"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btnfw"
-            android:elevation="0dp" />
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/btnxpop"
+            android:background="@android:drawable/ic_menu_close_clear_cancel" />
     </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="UselessLeaf,UselessParent"
+        android:background="@color/white"
+        android:id="@+id/laypopbtn">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView8"
+            android:textSize="30sp"
+            android:textAlignment="center"
+            android:layout_marginTop="10dp"
+            android:text="@string/favor_de_seleccionar_el_numero_de_comensal" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="80dp">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/txtvncomensal"
+                android:inputType="number"
+                android:textSize="36sp"
+                android:textStyle="normal|bold"
+                android:textAlignment="center">
+
+                </EditText>
+
+        </LinearLayout>
+
+        <TextView
+            android:text="@string/favor_de_ingresar_el_tiempo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView8t"
+            android:textSize="30sp"
+            android:textAlignment="center"
+            android:layout_marginTop="30dp" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="80dp">
+
+            <Button
+                android:text="-"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/btnmenost"
+                android:layout_weight="1"
+                android:textSize="36sp"
+                android:textStyle="normal|bold"
+                style="@android:style/Widget.Button"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/txtvntiempo"
+                android:layout_weight="1"
+                android:textSize="36sp"
+                android:textStyle="normal|bold"
+                android:textAlignment="center" />
+
+            <Button
+                android:text="+"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/btnmast"
+                android:layout_weight="1"
+                android:textSize="36sp"
+                android:textStyle="normal|bold"
+                style="@android:style/Widget.Button"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+
+        <Button
+            android:text="Continuar"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:id="@+id/btncont"
+            android:background="@android:color/darker_gray"
+            android:textSize="24sp"
+            android:layout_marginTop="20dp" />
+
+    </LinearLayout>
+
+
 </LinearLayout>
