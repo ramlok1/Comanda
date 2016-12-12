@@ -1,6 +1,7 @@
 package oasispv.pv;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +14,11 @@ public class lmg_adapter extends BaseAdapter {
     // Declare Variables
     private Context context;
     private LayoutInflater inflater;
-    private ArrayList<String> lista;
+    private ArrayList<datosmod> lista;
 
 
 
-    public lmg_adapter(Context context, ArrayList<String> lista) {
+    public lmg_adapter(Context context, ArrayList<datosmod> lista) {
         this.context = context;
         this.lista=lista;
     }
@@ -41,6 +42,8 @@ public class lmg_adapter extends BaseAdapter {
 
         // Declare Variables
         TextView txtmg;
+        TextView txtmod;
+        TextView txtguar;
 
 
         //http://developer.android.com/intl/es/reference/android/view/LayoutInflater.html
@@ -50,10 +53,19 @@ public class lmg_adapter extends BaseAdapter {
 
         // Locate the TextViews in listview_item.xml
         txtmg = (TextView) itemView.findViewById(R.id.txtmg);
+        txtmod = (TextView) itemView.findViewById(R.id.txtmodo);
+        txtguar = (TextView) itemView.findViewById(R.id.txtguar);
 
 
         // Capture position and set to the TextViews
-        txtmg.setText(lista.get(position).toString());
+        txtmg.setText(lista.get(position).desc);
+        txtmod.setText(lista.get(position).modo);
+        txtguar.setText(lista.get(position).guar);
+
+        if(lista.get(position).def.equals("S")) {
+
+            txtmg.setBackgroundColor(Color.BLUE);
+        }
 
         return itemView;
     }

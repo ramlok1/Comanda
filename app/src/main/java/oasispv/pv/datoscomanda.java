@@ -10,12 +10,14 @@ public class datoscomanda {
     public  int comensal;
     public  int tiempo;
     public  int idpr;
+    public  String nota;
 
-    public datoscomanda(String prdesc, Integer cantidad,Integer comensal,Integer tiempo,Integer idpr) {
+    public datoscomanda(String prdesc, Integer cantidad,Integer comensal,Integer tiempo,Integer idpr,String nota) {
         this.prdesc=prdesc;
         this.cantidad=cantidad;
         this.comensal=comensal;
         this.tiempo=tiempo;
         this.idpr=idpr;
+        this.nota=nota;
     }
 }

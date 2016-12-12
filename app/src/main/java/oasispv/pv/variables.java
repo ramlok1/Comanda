@@ -1,5 +1,7 @@
 package oasispv.pv;
 
+import java.util.ArrayList;
+
 /**
  * Created by Usuario on 28/11/2016.
  */
@@ -19,7 +21,10 @@ public  class variables {
     public static int comensal;
     public static int tiempo;
     public static int cmd;
+    public static int max_id;
     public static String modipv;
+    public static String mandatory;
+
 
 
 

@@ -44,6 +44,7 @@ public class lcomandar_adapter extends BaseAdapter {
         TextView txtcnt;
         TextView txtcomensal;
         TextView txtiempo;
+        TextView txtnota;
 
         //http://developer.android.com/intl/es/reference/android/view/LayoutInflater.html
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -55,12 +56,14 @@ public class lcomandar_adapter extends BaseAdapter {
         txtcnt = (TextView) itemView.findViewById(R.id.txtcnt);
         txtcomensal = (TextView) itemView.findViewById(R.id.txtcomensal);
         txtiempo = (TextView) itemView.findViewById(R.id.txtiempo);
+        txtnota = (TextView) itemView.findViewById(R.id.txtnota);
 
         // Capture position and set to the TextViews
         txtprd.setText(lista.get(position).prdesc);
         txtcnt.setText(Integer.toString(lista.get(position).cantidad));
         txtcomensal.setText(Integer.toString(lista.get(position).comensal));
         txtiempo.setText(Integer.toString(lista.get(position).tiempo));
+        txtnota.setText(lista.get(position).nota);
 
         return itemView;
     }

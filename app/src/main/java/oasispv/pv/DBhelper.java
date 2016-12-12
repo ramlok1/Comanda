@@ -21,8 +21,10 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String TABLE_PVPRODUCTOSMODI = "PVPRODUCTOSMODI";
     public static final String TABLE_PVMODOS = "PVMODOS";
     public static final String TABLE_PVMODOSG = "PVMODOSG";
-    public static final String TABLE_PVMODCG = "PVMODOCG";
+    public static final String TABLE_PVMODCG = "PVMODCG";
     public static final String TABLE_PVGUAR = "PVGUAR";
+    public static final String TABLE_TMP_PVMODCG = "TMP_PVMODCG";
+    public static final String TABLE_TMP_PVGUAR = "TMP_PVGUAR";
     public static final String TABLE_PVPRODUCTOSMODOSG = "PVPRODUCTOSMODOSG";
     public static final String TABLE_PVMENUS = "PVMENUS";
     public static final String TABLE_PVMESA = "PVMESA";
@@ -102,6 +104,7 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String CMD_CANTIDAD = "CANTIDAD";
     public static final String CMD_COMENSAL = "COMENSAL";
     public static final String CMD_TIEMPO = "TIEMPO";
+    public static final String CMD_NOTA = "NOTA";
     public static final String CMD_STATUS = "STATUS";
 
     // TABLA SESION
@@ -135,15 +138,19 @@ public class DBhelper extends SQLiteOpenHelper {
 
     // TABLA PVMODOCG
     public static final String CG_COMANDA = "CG_COMANDA";
+    public static final String CG_COMANDA_DET = "CG_COMANDA_DET";
     public static final String CG_PRODUCTO = "CG_PRODUCTO";
     public static final String CG_GRUPO= "CG_GRUPO";
     public static final String CG_MODO= "CG_MODO";
+    public static final String CG_DESC= "CG_DESC";
     public static final String CG_SELECCION= "CG_SELECCION";
 
     // TABLA PVMODGUAR
     public static final String GU_COMANDA = "GU_COMANDA";
+    public static final String GU_COMANDA_DET = "GU_COMANDA_DET";
     public static final String GU_PRODUCTO = "GU_PRODUCTO";
     public static final String GU_GUAR = "GU_GUAR";
+    public static final String GU_DESC = "GU_DESC";
     public static final String GU_SELECCION = "GU_SELECCION";
 
 
@@ -182,14 +189,25 @@ public class DBhelper extends SQLiteOpenHelper {
             + ")";
     // CREAR TABLA PVMODCG
     private static final String CREATE_TABLE_PVMODCG = "CREATE TABLE "
-            + TABLE_PVMODCG + "(" + CG_COMANDA + " INTEGER,"
-            + CG_PRODUCTO + " TEXT,"+ CG_GRUPO + " TEXT,"+ CG_MODO + " TEXT,"
+            + TABLE_PVMODCG + "(" + CG_COMANDA + " INTEGER,"+ CG_COMANDA_DET + " INTEGER,"
+            + CG_PRODUCTO + " TEXT,"+ CG_GRUPO + " TEXT,"+ CG_MODO + " TEXT,"+ CG_DESC + " TEXT,"
             + CG_SELECCION + " TEXT"
             + ")";
     // CREAR TABLA PVGUAR
     private static final String CREATE_TABLE_PVGUAR = "CREATE TABLE "
-            + TABLE_PVGUAR + "(" + GU_COMANDA + " INTEGER,"
-            + GU_PRODUCTO + " TEXT,"+ GU_GUAR + " TEXT,"+ GU_SELECCION + " TEXT"
+            + TABLE_PVGUAR + "(" + GU_COMANDA + " INTEGER,"+ GU_COMANDA_DET + " INTEGER,"
+            + GU_PRODUCTO + " TEXT,"+ GU_GUAR + " TEXT,"+ GU_DESC + " TEXT,"+ GU_SELECCION + " TEXT"
+            + ")";
+    // CREAR TABLA PVMODCG_TMP
+    private static final String CREATE_TABLE_TMP_PVMODCG = "CREATE TABLE "
+            + TABLE_TMP_PVMODCG + "(" + CG_COMANDA + " INTEGER,"
+            + CG_PRODUCTO + " TEXT,"+ CG_GRUPO + " TEXT,"+ CG_MODO + " TEXT,"+ CG_DESC + " TEXT,"
+            + CG_SELECCION + " TEXT"
+            + ")";
+    // CREAR TABLA PVGUAR_TMP
+    private static final String CREATE_TABLE_TMP_PVGUAR = "CREATE TABLE "
+            + TABLE_TMP_PVGUAR + "(" + GU_COMANDA + " INTEGER,"
+            + GU_PRODUCTO + " TEXT,"+ GU_GUAR + " TEXT,"+ GU_DESC + " TEXT,"+ GU_SELECCION + " TEXT"
             + ")";
     // CREAR TABLA PVMODOSG
     private static final String CREATE_TABLE_PVMODOSG = "CREATE TABLE "
@@ -206,7 +224,7 @@ public class DBhelper extends SQLiteOpenHelper {
             + TABLE_COMANDA + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
             + CMD_SESION + " INTEGER,"+ CMD_MESA + " TEXT,"+ CMD_TRANSA + " TEXT,"
             + CMD_PRID + " TEXT,"+ CMD_PRDESC + " TEXT,"+ CMD_CANTIDAD + " INTEGER,"
-            + CMD_COMENSAL + " INTEGER,"+ CMD_TIEMPO + " INTEGER,"
+            + CMD_COMENSAL + " INTEGER,"+ CMD_TIEMPO + " INTEGER,"+ CMD_NOTA + " TEXT,"
             + CMD_STATUS + " TEXT"
             + ")";
 
@@ -281,6 +299,8 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_PVMODOSG);
         db.execSQL(CREATE_TABLE_PVMODCG);
         db.execSQL(CREATE_TABLE_PVGUAR);
+        db.execSQL(CREATE_TABLE_TMP_PVMODCG);
+        db.execSQL(CREATE_TABLE_TMP_PVGUAR);
         db.execSQL(CREATE_TABLE_PRMOD);
         db.execSQL(CREATE_TABLE_COMANDAENC);
         db.execSQL(CREATE_TABLE_PVPRODUCTOSMODOSG);
@@ -303,6 +323,8 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PVMODOSG);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PVMODCG);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PVGUAR);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TMP_PVMODCG);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TMP_PVGUAR);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRMOD);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMANDAENC);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PVPRODUCTOSMODOSG);
