@@ -25,7 +25,7 @@ public  class variables {
     public static String modipv;
     public static String mandatory;
     public static String prdesc;
-    public static String moddesc;
+    public static String mesero_mesa;
 
 
 

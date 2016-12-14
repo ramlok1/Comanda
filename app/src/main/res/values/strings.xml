@@ -13,4 +13,6 @@
     <string name="enviar">ENVIAR</string>
     <string name="favor_de_seleccionar_el_numero_de_comensal">Favor de ingresar el numero de comensal</string>
     <string name="favor_de_ingresar_el_tiempo">Favor de ingresar el tiempo</string>
+    <string name="cerrar_cheque">CERRAR CHEQUE</string>
+    <string name="agregar_producto">Agregar Producto</string>
 </resources>

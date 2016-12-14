@@ -49,7 +49,7 @@ public class lcomandar_adapter extends BaseAdapter {
         //http://developer.android.com/intl/es/reference/android/view/LayoutInflater.html
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View itemView = inflater.inflate(R.layout.lay_comanda_r, parent, false);
+        View itemView = inflater.inflate(R.layout.lay_popup, parent, false);
 
         // Locate the TextViews in listview_item.xml
         txtprd = (TextView) itemView.findViewById(R.id.txtprd);

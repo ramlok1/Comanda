@@ -52,6 +52,7 @@ public class tables extends AppCompatActivity {
 
     }
     private void leermesas(){
+        String mesero = "N";
         dbhelper = new DBhelper(getApplicationContext());
         SQLiteDatabase dbs = dbhelper.getWritableDatabase();
 
@@ -63,7 +64,7 @@ public class tables extends AppCompatActivity {
             LinearLayout contenedor = null;
 
 
-            String query = "SELECT id,MESA_NAME,HABI,MESA_MESERO FROM " + DBhelper.TABLE_PVMESA + " WHERE MOVI='" + variables.movi + "' AND FASE='" + variables.fase + "'";
+            String query = "SELECT MESA,MESA_NAME,HABI,MESA_MESERO FROM " + DBhelper.TABLE_PVMESA + " WHERE MOVI='" + variables.movi + "' AND FASE='" + variables.fase + "'";
 
             Cursor rs = dbs.rawQuery(query, null);
             if (rs.getCount() > 0) {
@@ -76,17 +77,24 @@ public class tables extends AppCompatActivity {
                         contenedor.setOrientation((LinearLayout.HORIZONTAL));
                         btnsContainer.addView(contenedor);
                     }
+                    ArrayList<String> datos = new ArrayList<>();
                     Button btn = new Button(this);
                     btn.setLayoutParams(new LinearLayout.LayoutParams(120, LinearLayout.LayoutParams.MATCH_PARENT));
 
-                    if (rs.getString(rs.getColumnIndex(DBhelper.KEY_HABI))==null){
-                        btn.setText(rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_NAME)));
 
-                    }else {
+
+                    btn.setText(rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_NAME)));
+                    datos.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA)));
+
+                    //verifica si en la tabla existe registro de mesero para la mesa
+                    if (rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_MESERO))!=null){
+                        mesero=rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_MESERO));
                         btn.setText(rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_NAME)) + "\n" + rs.getString(rs.getColumnIndex(DBhelper.KEY_HABI)) + "\n" + rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_MESERO)));
                         btn.setBackgroundColor(getResources().getColor(R.color.ambar));
                     }
-                    btn.setTag(rs.getString(rs.getColumnIndex(DBhelper.KEY_ID)));
+
+                    datos.add(mesero);
+                    btn.setTag(datos);
 
 
                     contenedor.addView(btn);
@@ -96,16 +104,29 @@ public class tables extends AppCompatActivity {
 
 
                             Intent intent = new Intent(getApplicationContext(), platillos.class);
+                            Intent intentcomanda = new Intent(getApplicationContext(), comanda.class);
                             Button b = (Button)v;
-                            variables.mesa=b.getTag().toString();
-                            variables.cmd = busca_comanda();
 
+
+                            variables.mesa=((List<String>)v.getTag()).get(0).toString();
+
+                            variables.mesero_mesa = ((List<String>) v.getTag()).get(1).toString();
+
+
+
+
+                            variables.cmd = busca_comanda();
                             if ( variables.cmd==-1) {
                                 genera_comanda();
                                 variables.cmd = busca_comanda();
 
                             }
-                            startActivity(intent);
+                            if(variables.mesero_mesa.equalsIgnoreCase("N")) {
+
+                                startActivity(intent);
+                            }else {
+                                startActivity(intentcomanda);
+                            }
 
                         }
                     });
@@ -223,7 +244,7 @@ public class tables extends AppCompatActivity {
         dbhelper = new DBhelper(getApplicationContext());
         SQLiteDatabase dbs = dbhelper.getWritableDatabase();
 
-        String query = "SELECT ID FROM " + DBhelper.TABLE_COMANDAENC + " WHERE CE_SESION='" + variables.sesion + "' AND CE_MESA='" + variables.mesa + "'";
+        String query = "SELECT ID FROM " + DBhelper.TABLE_COMANDAENC + " WHERE CE_SESION='" + variables.sesion + "' AND CE_MESA='" + variables.mesa + "' AND CE_STATUS='A'";
 
         Cursor rs = dbs.rawQuery(query, null);
         if (rs.moveToFirst()) {

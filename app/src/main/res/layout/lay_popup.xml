@@ -2,38 +2,56 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:ignore="RtlHardcoded,RtlSymmetry">
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:paddingLeft="5dp"
+    tools:ignore="RtlHardcoded,RtlSymmetry"
+    >
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/txtprd"
-        android:textSize="18sp" />
+        <TextView
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtprd"
+            android:textSize="18sp"
+            android:layout_weight="1" />
 
-    <TextView
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/txtcomensal"
-        android:textSize="18sp"
-        android:textAlignment="center"
-        android:layout_marginLeft="100dp" />
+        <TextView
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtcomensal"
+            android:textSize="18sp"
+            android:textAlignment="center"
+            android:layout_marginLeft="40dp"
+            android:layout_weight="1" />
 
-    <TextView
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/txtiempo"
-        android:textAlignment="center"
-        android:textSize="18sp"
-        android:layout_marginLeft="30dp" />
+        <TextView
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtiempo"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1" />
+    </LinearLayout>
 
-    <Button
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:id="@+id/btndelpr"
-        android:background="@android:drawable/btn_dialog"
-        android:layout_marginLeft="10dp" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtnota"
+            android:layout_weight="1"
+            android:textAlignment="textStart" />
+    </LinearLayout>
 
 </LinearLayout>
