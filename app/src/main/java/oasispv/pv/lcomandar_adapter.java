@@ -41,7 +41,7 @@ public class lcomandar_adapter extends BaseAdapter {
 
         // Declare Variables
         TextView txtprd;
-        TextView txtcnt;
+
         TextView txtcomensal;
         TextView txtiempo;
         TextView txtnota;
@@ -53,14 +53,13 @@ public class lcomandar_adapter extends BaseAdapter {
 
         // Locate the TextViews in listview_item.xml
         txtprd = (TextView) itemView.findViewById(R.id.txtprd);
-        txtcnt = (TextView) itemView.findViewById(R.id.txtcnt);
+
         txtcomensal = (TextView) itemView.findViewById(R.id.txtcomensal);
         txtiempo = (TextView) itemView.findViewById(R.id.txtiempo);
         txtnota = (TextView) itemView.findViewById(R.id.txtnota);
 
         // Capture position and set to the TextViews
         txtprd.setText(lista.get(position).prdesc);
-        txtcnt.setText(Integer.toString(lista.get(position).cantidad));
         txtcomensal.setText(Integer.toString(lista.get(position).comensal));
         txtiempo.setText(Integer.toString(lista.get(position).tiempo));
         txtnota.setText(lista.get(position).nota);

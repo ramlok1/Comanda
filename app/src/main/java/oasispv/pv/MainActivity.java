@@ -135,6 +135,8 @@ public class MainActivity extends AppCompatActivity{
         dbs.delete(DBhelper.TABLE_PVMODOS, null, null);
         dbs.delete(DBhelper.TABLE_PVPRODUCTOSMODI, null, null);
         dbs.delete(DBhelper.TABLE_PVPRODUCTOSMODOSG, null, null);
+        dbs.delete(DBhelper.TABLE_PRMOD, null, null);
+        dbs.delete(DBhelper.TABLE_PVMODOSG, null, null);
 
         String querycat1 = "select CAT1_MOVI, CAT1_FASE, CAT1_CARTA, CAT1, CAT1_IMAGEN, CAT1_DESC, CAT1_POS" +
                 " FROM PVCAT1 where CAT1_MOVI='" + movi + "' and CAT1_FASE='" + fase + "' ";
@@ -299,6 +301,7 @@ public class MainActivity extends AppCompatActivity{
                 cv.put(DBhelper.KEY_PM_GRUPOPR, rs.getString("PM_GRUPOPR"));
                 cv.put(DBhelper.KEY_PM_SUBFAMILIAPR, rs.getString("PM_SUBFAMILIAPR"));
                 cv.put(DBhelper.KEY_PM_MODI,"N");
+                cv.put(DBhelper.KEY_PM_GUAR,"N");
                 dbs.insert(DBhelper.TABLE_PVMENUS, null, cv);
             }
             stmt.close();

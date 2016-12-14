@@ -24,6 +24,8 @@ public  class variables {
     public static int max_id;
     public static String modipv;
     public static String mandatory;
+    public static String prdesc;
+    public static String moddesc;
 
 
 

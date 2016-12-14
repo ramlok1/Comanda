@@ -40,8 +40,6 @@ public class platillos extends AppCompatActivity {
     String fase = variables.fase;
     Bundle extras;
     Button btncomanda;
-    String[] vrest = new String[]{"CARNE ASADA","VINO DOS LUNAS","POLLO A LA PLANCHA","PIZZA","HAMBURGUESA"};
-    String[] vcant = new String[]{"1","2","3","1","1"};
 
 
 
@@ -59,14 +57,14 @@ public class platillos extends AppCompatActivity {
         view1.findViewById(R.id.icon).setBackgroundResource(R.drawable.cocinero);
         tabLayout.addTab(tabLayout.newTab().setCustomView(view1));*/
 
-        btncomanda = (Button) findViewById(R.id.btncomand);
+       /* btncomanda = (Button) findViewById(R.id.btncomand);
         btncomanda.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             popup_comanda();
 
             }
-        });
+        });*/
         dbhelper = new DBhelper(getApplicationContext());
         dbs = dbhelper.getWritableDatabase();
         ActionBar backbtn = getSupportActionBar();
@@ -229,7 +227,7 @@ public class platillos extends AppCompatActivity {
 
 
 
-        String query = "SELECT PM_PRODUCTO,PM_PRODUCTO_DESC,PM_MODI FROM " + DBhelper.TABLE_PVMENUS + " WHERE PM_MOVI='" + movi + "' AND PM_FASE='" + fase + "' AND PM_CAT1='" + cat1 + "' AND PM_CAT2='"+cat2+"' ";
+        String query = "SELECT PM_PRODUCTO,PM_PRODUCTO_DESC,PM_MODI,PM_GUAR FROM " + DBhelper.TABLE_PVMENUS + " WHERE PM_MOVI='" + movi + "' AND PM_FASE='" + fase + "' AND PM_CAT1='" + cat1 + "' AND PM_CAT2='"+cat2+"' ";
 
         Cursor rs = dbs.rawQuery(query, null);
         if (rs.moveToFirst()) {
@@ -248,6 +246,7 @@ public class platillos extends AppCompatActivity {
                 data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_PRODUCTO)));
                 data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_PRODUCTO_DESC)));
                 data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_MODI)));
+                data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_GUAR)));
                 btn.setTag(data);
                 contenedor.addView(btn);
                 btn.setOnClickListener(new View.OnClickListener() {
@@ -257,17 +256,14 @@ public class platillos extends AppCompatActivity {
                     String dato1 = ((List<String>)v.getTag()).get(0).toString();
                     String dato2 = ((List<String>)v.getTag()).get(1).toString();
                     String dato3 = ((List<String>)v.getTag()).get(2).toString();
+                    String dato4 = ((List<String>)v.getTag()).get(3).toString();
 
                     if (variables.modipv.equalsIgnoreCase("S")) {
-                        popup_window(dato1, dato2,dato3);
+                        popup_window(dato1, dato2,dato3,dato4);
                     }else{
                         inserta_producto(dato1,dato2,1,1);
                         muestra_cmdtmp();
-                    }
-
-
-
-
+                   }
                 }
             });
                 contl = contl + 1;
@@ -333,9 +329,11 @@ public class platillos extends AppCompatActivity {
 
 
     }
-    private void popup_window( final String dato1,final String dato2, final String modi) {
+    private void popup_window( final String dato1,final String dato2, final String modi, final String guar) {
 
         final PopupWindow pwindo;
+
+
 
 
             LayoutInflater inflat = (LayoutInflater) platillos.this
@@ -343,11 +341,13 @@ public class platillos extends AppCompatActivity {
             final View layout = inflat.inflate(R.layout.popup_window,
                     (ViewGroup) findViewById(R.id.popup_window_lp));
 
+        TextView txttitle = (TextView) layout.findViewById(R.id.txttitlepop);
+        variables.prdesc= dato2;
+        txttitle.setText(dato2);
 
 
-
-            pwindo = new PopupWindow(layout, 600,450, true);
-            pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
+            pwindo = new PopupWindow(layout, 600,600, true);
+            pwindo.showAtLocation(layout, Gravity.CENTER, 0, -20);
 
             btnClosePopup = (Button) layout.findViewById(R.id.btnxpop);
             btnClosePopup.setOnClickListener(new View.OnClickListener() {
@@ -363,8 +363,40 @@ public class platillos extends AppCompatActivity {
         contenedor.setOrientation((LinearLayout.HORIZONTAL));
         contenedorpop.addView(contenedor);
 
+
+
+
+        /////////////////COMENSAL
         final EditText txtcomensal= (EditText) layout.findViewById(R.id.txtvncomensal);
 
+        txtcomensal.setText("1");
+        Button btnmenosc = (Button) layout.findViewById(R.id.btnmenosc);
+        btnmenosc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int comensal = Integer.parseInt(txtcomensal.getText().toString());
+                if(comensal==1) {
+                    txtcomensal.setText("1");
+                }else{
+
+                    comensal=comensal-1;
+                    txtcomensal.setText(Integer.toString(comensal));
+                }
+
+            }
+        });
+        Button  btnmasc= (Button) layout.findViewById(R.id.btnmasc);
+        btnmasc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                    int comensal = Integer.parseInt(txtcomensal.getText().toString());
+                comensal=comensal+1;
+                    txtcomensal.setText(Integer.toString(comensal));
+
+
+            }
+        });
 
 
         /////////////////TIEMPO
@@ -406,13 +438,13 @@ public class platillos extends AppCompatActivity {
             public void onClick(View v) {
                  variables.comensal = Integer.parseInt(txtcomensal.getText().toString());
                  variables.tiempo = Integer.parseInt(txttiempo.getText().toString());
-                if (modi.equalsIgnoreCase("N")) {
+                if (modi.equalsIgnoreCase("N")&&guar.equalsIgnoreCase("N")) {
                     inserta_producto(dato1, dato2, variables.comensal, variables.tiempo);
                     muestra_cmdtmp();
                     pwindo.dismiss();
                 }else{
 
-                    modificadores(dato1,dato2,modi,layout,pwindo);
+                    modificadores(dato1,dato2,modi,layout,pwindo,guar);
                 }
 
 
@@ -453,8 +485,10 @@ public class platillos extends AppCompatActivity {
         String query = "SELECT * FROM " + DBhelper.TABLE_TMP_PVMODCG + " WHERE CG_COMANDA='"
                 + variables.cmd + "'  AND CG_PRODUCTO='"+prid+"'";
 
-        Cursor rs = dbs.rawQuery(query, null);
+        String queryguar = "SELECT * FROM " + DBhelper.TABLE_TMP_PVGUAR + " WHERE GU_COMANDA='"
+                + variables.cmd + "'  AND GU_PRODUCTO='"+prid+"'";
 
+        Cursor rs = dbs.rawQuery(query, null);
         if (rs.moveToFirst()) {
             do {
 
@@ -480,7 +514,33 @@ public class platillos extends AppCompatActivity {
 
             } while (rs.moveToNext());
         }
+         rs = dbs.rawQuery(queryguar, null);
+        if (rs.moveToFirst()) {
+            do {
+
+                try {
+                    ContentValues cv = new ContentValues();
+                    cv.put(DBhelper.GU_COMANDA, variables.cmd);
+                    cv.put(DBhelper.GU_COMANDA_DET, variables.max_id);
+                    cv.put(DBhelper.GU_PRODUCTO, prid);
+                    cv.put(DBhelper.GU_GUAR, rs.getString(rs.getColumnIndex("GU_GUAR")));
+                    cv.put(DBhelper.GU_DESC, rs.getString(rs.getColumnIndex("GU_DESC")));
+                    cv.put(DBhelper.GU_SELECCION, rs.getString(rs.getColumnIndex("GU_SELECCION")));
+                    dbs.insert(DBhelper.TABLE_PVGUAR, null, cv);
+
+                    if(rs.getString(rs.getColumnIndex("GU_SELECCION")).equals("S")){
+                        nota=nota+","+rs.getString(rs.getColumnIndex("GU_DESC"));
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } while (rs.moveToNext());
+        }
      dbs.delete(DBhelper.TABLE_TMP_PVMODCG,"CG_COMANDA="+variables.cmd,null);
+        dbs.delete(DBhelper.TABLE_TMP_PVGUAR,"GU_COMANDA="+variables.cmd,null);
 
         ContentValues n = new ContentValues();
         n.put(DBhelper.CMD_NOTA, nota);
@@ -522,7 +582,7 @@ public class platillos extends AppCompatActivity {
                     (ViewGroup) findViewById(R.id.laycmdread));*/
 
             ListView laycmdread = (ListView) findViewById(R.id.listcmdread);
-            lcomandar_adapter adapter = new lcomandar_adapter(platillos.this,datos);
+            listrestadp adapter = new listrestadp(platillos.this,datos);
             laycmdread.setAdapter(adapter);
 
         }
@@ -535,7 +595,11 @@ public class platillos extends AppCompatActivity {
 
     }
 
-    private void modificadores(final String pr,final String dato2,final String modi, final View layout, final PopupWindow pwindo) {
+    private void modificadores(final String pr,final String dato2,final String modi, final View layout, final PopupWindow pwindo, final String guar) {
+
+
+
+
 
         LinearLayout btnsContainer = (LinearLayout) layout.findViewById(R.id.laypopbtn);
         btnsContainer.removeAllViews();
@@ -566,7 +630,7 @@ public class platillos extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 pwindo.dismiss();
-                popup_window(pr,dato2,modi);
+                popup_window(pr,dato2,modi,guar);
 
 
             }
@@ -574,10 +638,11 @@ public class platillos extends AppCompatActivity {
 
 
         String query = "SELECT GP_GRUPO,GP_GRUPO_DESC FROM " + DBhelper.TABLE_PVPRODUCTOSMODOSG + " WHERE GP_PRODUCTO='" + pr + "'";
-
+        final TextView txttitle = (TextView) layout.findViewById(R.id.txttitlepop);
         Cursor rs = dbs.rawQuery(query, null);
         if (rs.moveToFirst()) {
             String mod1 = rs.getString(rs.getColumnIndex(DBhelper.GP_GRUPO));
+            String txt = rs.getString(rs.getColumnIndex(DBhelper.GP_GRUPO_DESC));
             do {
                 String grupo = rs.getString(rs.getColumnIndex(DBhelper.GP_GRUPO));
                 String gdesc= rs.getString(rs.getColumnIndex(DBhelper.GP_GRUPO_DESC));
@@ -590,8 +655,12 @@ public class platillos extends AppCompatActivity {
                 btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+
                         Button b = (Button)v;
                         String txt = b.getTag().toString();
+                        String tit = b.getText().toString();
+                        txttitle.setText(variables.prdesc+"\n"+tit);
                         muestra_modificador(pr,txt,layout);
 
 
@@ -603,6 +672,7 @@ public class platillos extends AppCompatActivity {
 
             }while (rs.moveToNext());
                         muestra_modificador(pr,mod1,layout);
+                        txttitle.setText(variables.prdesc+"\n"+txt);
         }
         ////boton guarni
         Button btnguar = new Button(this);
@@ -612,7 +682,10 @@ public class platillos extends AppCompatActivity {
         btnguar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(guar.equalsIgnoreCase("S")) {
+                    txttitle.setText(variables.prdesc+"\n"+"COMPLEMENTOS");
+                    muestra_guarnicion(pr,layout);
+                }
 
             }
         });
@@ -634,6 +707,7 @@ public class platillos extends AppCompatActivity {
 
     }
     private void muestra_modificador(final String pr, final String mod, final View layout) {
+
         Cursor rs;
 
         String query = "SELECT MD_GRUPO,MD_MODO,MD_DESC,MD_DEFAULT FROM " + DBhelper.TABLE_PVMODOS + " WHERE MD_GRUPO='" + mod + "'";
@@ -702,7 +776,9 @@ public class platillos extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     TextView txtmodo = (TextView) view.findViewById(R.id.txtmodo);
+                    TextView txtsel = (TextView) view.findViewById(R.id.txtsel);
                     String modo = txtmodo.getText().toString();
+                    String sel = txtsel.getText().toString();
 
                     ContentValues cv = new ContentValues();
                     if(variables.mandatory.equals("S")){
@@ -710,9 +786,101 @@ public class platillos extends AppCompatActivity {
                         v.put(DBhelper.CG_SELECCION,"N");
                         dbs.update(DBhelper.TABLE_TMP_PVMODCG,v,"CG_COMANDA="+variables.cmd+" AND CG_PRODUCTO='"+pr+"' AND CG_GRUPO='"+mod+"'",null);
                     }
-                    cv.put(DBhelper.CG_SELECCION,"S");
+                    if(sel.equalsIgnoreCase("N")) {
+                        cv.put(DBhelper.CG_SELECCION, "S");
+                    }else {
+                        cv.put(DBhelper.CG_SELECCION, "N");
+                    }
+
                     dbs.update(DBhelper.TABLE_TMP_PVMODCG,cv,"CG_COMANDA="+variables.cmd+" AND CG_PRODUCTO='"+pr+"' AND CG_GRUPO='"+mod+"' AND CG_MODO='"+modo+"'",null);
                     muestra_modificador(pr,mod,layout);
+                }
+            });
+
+        }
+
+    }
+    private void muestra_guarnicion(final String pr, final View layout) {
+        Cursor rs;
+
+        String query = "SELECT MP_PRODUCTO,MP_MODI,MP_DEFAULT FROM " + DBhelper.TABLE_PVPRODUCTOSMODI + " WHERE MP_PRODUCTO='" + pr + "'";
+        String querytmp = "SELECT GU_GUAR,GU_DESC,GU_SELECCION FROM " + DBhelper.TABLE_TMP_PVGUAR + " WHERE GU_COMANDA=" + variables.cmd + " AND GU_PRODUCTO='"+pr+"'";
+
+
+
+        ArrayList<datosmod> datos = new ArrayList<>();
+        long countmd= DatabaseUtils.queryNumEntries(dbs,DBhelper.TABLE_TMP_PVGUAR,"GU_COMANDA="+variables.cmd+" AND GU_PRODUCTO='"+pr+"'");
+
+        if (countmd>0){
+            rs = dbs.rawQuery(querytmp, null);
+        }else {
+            rs = dbs.rawQuery(query, null);
+        }
+        if (rs.moveToFirst()) {
+            do {
+
+                try {
+                    if (countmd>0) {
+                        datos.add(new datosmod(
+                                rs.getString(rs.getColumnIndex(DBhelper.GU_DESC)),
+                                "NO",
+                                rs.getString(rs.getColumnIndex(DBhelper.GU_GUAR)),
+                                rs.getString(rs.getColumnIndex(DBhelper.GU_SELECCION))
+                        ));
+                    }else {
+
+                        Cursor c = dbs.rawQuery("SELECT PD_DESC FROM "+DBhelper.TABLE_PRMOD+" WHERE PD_PRODUCTO='"+rs.getString(rs.getColumnIndex(DBhelper.MP_MODI))+"'",null);
+                        c.moveToFirst();
+
+                        // Inserta datos de grupo en tabla temporal
+                        ContentValues cv = new ContentValues();
+                        cv.put(DBhelper.GU_COMANDA, variables.cmd);
+                        cv.put(DBhelper.GU_PRODUCTO, pr);
+                        cv.put(DBhelper.GU_GUAR, rs.getString(rs.getColumnIndex(DBhelper.MP_MODI)));
+                        cv.put(DBhelper.GU_DESC, c.getString(c.getColumnIndex(DBhelper.PD_DESC)));
+                        cv.put(DBhelper.GU_SELECCION, rs.getString(rs.getColumnIndex(DBhelper.MP_DEFAULT)));
+                        dbs.insert(DBhelper.TABLE_TMP_PVGUAR, null, cv);
+
+                        //Inserta valores en Array para enviar a adapter de lista
+                        datos.add(new datosmod(
+                                c.getString(c.getColumnIndex(DBhelper.PD_DESC)),
+                                "NO",
+                                rs.getString(rs.getColumnIndex(DBhelper.MP_MODI)),
+                                rs.getString(rs.getColumnIndex(DBhelper.MP_DEFAULT))
+                        ));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }while (rs.moveToNext());
+
+
+
+            final ListView layguar = (ListView) layout.findViewById(R.id.listamg);
+            layguar.setAdapter(null);
+
+            lmg_adapter adapter = new lmg_adapter(platillos.this,datos);
+            layguar.setAdapter(adapter);
+
+
+            layguar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    TextView txtguar = (TextView) view.findViewById(R.id.txtguar);
+                    TextView txtsel = (TextView) view.findViewById(R.id.txtsel);
+                    String guar = txtguar.getText().toString();
+                    String sel = txtsel.getText().toString();
+
+                    ContentValues cv = new ContentValues();
+                    if(sel.equalsIgnoreCase("N")) {
+                        cv.put(DBhelper.GU_SELECCION, "S");
+                    }else {
+                        cv.put(DBhelper.GU_SELECCION, "N");
+                    }
+                        dbs.update(DBhelper.TABLE_TMP_PVGUAR, cv, "GU_COMANDA=" + variables.cmd + " AND GU_PRODUCTO='" + pr + "' AND GU_GUAR='" + guar + "'", null);
+                        muestra_guarnicion(pr, layout);
+
                 }
             });
 

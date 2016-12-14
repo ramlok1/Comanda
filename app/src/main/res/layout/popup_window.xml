@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="600dp"
-    android:layout_height="450dp"
+    android:layout_height="600dp"
 
     android:id="@+id/popup_window_lp"
     android:baselineAligned="false">
@@ -16,12 +16,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:id="@+id/textView4"
+            android:id="@+id/txttitlepop"
             android:layout_weight="1"
-            android:textStyle="normal|bold"
-            android:textAlignment="center"
-            android:textSize="30sp"
-            tools:ignore="InefficientWeight" />
+            android:inputType="textMultiLine"
+            android:textSize="18sp"
+            tools:ignore="InefficientWeight"
+            android:textColor="@color/white"
+            android:layout_marginLeft="10dp"
+            android:textAlignment="center" />
 
         <Button
             android:layout_width="50dp"
@@ -52,16 +54,43 @@
             android:layout_width="match_parent"
             android:layout_height="80dp">
 
+            <Button
+                android:text="-"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/btnmenosc"
+                android:layout_weight="1"
+
+                android:textSize="36sp"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/black"
+                android:textStyle="normal|bold"
+                style="@android:style/Widget.Button"
+                tools:ignore="HardcodedText,UnusedAttribute" />
+
             <EditText
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:id="@+id/txtvncomensal"
                 android:inputType="number"
                 android:textSize="36sp"
+                android:layout_weight="1"
                 android:textStyle="normal|bold"
                 android:textAlignment="center">
 
                 </EditText>
+
+            <Button
+                android:text="+"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/btnmasc"
+                android:layout_weight="1"
+                android:textColor="@color/black"
+                android:textSize="36sp"
+                android:textStyle="normal|bold"
+                style="@android:style/Widget.Button"
+                tools:ignore="HardcodedText" />
 
         </LinearLayout>
 
@@ -118,7 +147,8 @@
             android:id="@+id/btncont"
             android:background="@android:color/darker_gray"
             android:textSize="24sp"
-            android:layout_marginTop="20dp" />
+            android:layout_marginTop="20dp"
+            tools:ignore="HardcodedText" />
 
     </LinearLayout>
 

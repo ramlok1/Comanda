@@ -43,30 +43,33 @@ public class listrestadp extends BaseAdapter {
 
         // Declare Variables
         TextView txtprd;
-        TextView txtcnt;
+
         TextView txtcomensal;
         TextView txtiempo;
+        TextView txtnota;
         Button btnxpr;
 
 
                 //http://developer.android.com/intl/es/reference/android/view/LayoutInflater.html
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        final View itemView = inflater.inflate(R.layout.lay_popup, parent, false);
+        final View itemView = inflater.inflate(R.layout.lay_comanda_r, parent, false);
 
         // Locate the TextViews in listview_item.xml
 
         txtprd = (TextView) itemView.findViewById(R.id.txtprd);
-        txtcnt = (TextView) itemView.findViewById(R.id.txtcnt);
+
         txtcomensal = (TextView) itemView.findViewById(R.id.txtcomensal);
         txtiempo = (TextView) itemView.findViewById(R.id.txtiempo);
         btnxpr = (Button) itemView.findViewById(R.id.btndelpr);
+        txtnota = (TextView) itemView.findViewById(R.id.txtnota);
 
         // Capture position and set to the TextViews
         txtprd.setText(lista.get(position).prdesc);
-        txtcnt.setText(Integer.toString(lista.get(position).cantidad));
+
         txtcomensal.setText(Integer.toString(lista.get(position).comensal));
         txtiempo.setText(Integer.toString(lista.get(position).tiempo));
+        txtnota.setText(lista.get(position).nota);
         btnxpr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

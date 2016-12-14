@@ -44,6 +44,7 @@ public class lmg_adapter extends BaseAdapter {
         TextView txtmg;
         TextView txtmod;
         TextView txtguar;
+        TextView txtsel;
 
 
         //http://developer.android.com/intl/es/reference/android/view/LayoutInflater.html
@@ -55,12 +56,14 @@ public class lmg_adapter extends BaseAdapter {
         txtmg = (TextView) itemView.findViewById(R.id.txtmg);
         txtmod = (TextView) itemView.findViewById(R.id.txtmodo);
         txtguar = (TextView) itemView.findViewById(R.id.txtguar);
+        txtsel = (TextView) itemView.findViewById(R.id.txtsel);
 
 
         // Capture position and set to the TextViews
         txtmg.setText(lista.get(position).desc);
         txtmod.setText(lista.get(position).modo);
         txtguar.setText(lista.get(position).guar);
+        txtsel.setText(lista.get(position).def);
 
         if(lista.get(position).def.equals("S")) {
 

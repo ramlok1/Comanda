@@ -79,9 +79,15 @@ public class tables extends AppCompatActivity {
                     Button btn = new Button(this);
                     btn.setLayoutParams(new LinearLayout.LayoutParams(120, LinearLayout.LayoutParams.MATCH_PARENT));
 
-                    btn.setText(rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_NAME))+"\n"+rs.getString(rs.getColumnIndex(DBhelper.KEY_HABI))+"\n"+rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_MESERO)));
+                    if (rs.getString(rs.getColumnIndex(DBhelper.KEY_HABI))==null){
+                        btn.setText(rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_NAME)));
+
+                    }else {
+                        btn.setText(rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_NAME)) + "\n" + rs.getString(rs.getColumnIndex(DBhelper.KEY_HABI)) + "\n" + rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_MESERO)));
+                        btn.setBackgroundColor(getResources().getColor(R.color.ambar));
+                    }
                     btn.setTag(rs.getString(rs.getColumnIndex(DBhelper.KEY_ID)));
-                    btn.setBackgroundColor(getResources().getColor(R.color.ambar));
+
 
                     contenedor.addView(btn);
                     btn.setOnClickListener(new View.OnClickListener() {
@@ -151,6 +157,8 @@ public class tables extends AppCompatActivity {
         //borrar datos existentes
         dbs.delete(DBhelper.TABLE_PVMESA, null, null);
 
+        String query_mesas = "SELECT PM_MESA,PM_NOMBRE FROM PVMESAS WHERE PM_MOVI='"+variables.movi+"' AND PM_FASE='"+variables.fase+"' AND PM_AREA IS NOT NULL";
+
         String query = "select CE_MESA,PM_NOMBRE,CE_MESERO, CE_HABI, CE_PAX " +
                 "                 FROM PVCHEQDIAENC,PVMESAS where CE_MOVI='"+variables.movi+"' and CE_FASE='"+variables.fase+"' and CE_CIERRA_F IS NULL" +
                 "                 and CE_CAN_F IS NULL and CE_MESA IS NOT NULL AND PM_MOVI=CE_MOVI AND PM_FASE=CE_FASE AND PM_MESA=CE_MESA";
@@ -158,18 +166,32 @@ public class tables extends AppCompatActivity {
         //////INSERTA PVMESA
         try {
             stmt = conexion.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
+            ResultSet rs = stmt.executeQuery(query_mesas);
             while (rs.next()) {
                 ContentValues cv = new ContentValues();
                 cv.put(DBhelper.KEY_MOVI, variables.movi);
                 cv.put(DBhelper.KEY_FASE, variables.fase);
-                cv.put(DBhelper.KEY_MESA, rs.getString("CE_MESA"));
+                cv.put(DBhelper.KEY_MESA, rs.getString("PM_MESA"));
                 cv.put(DBhelper.KEY_MESA_NAME, rs.getString("PM_NOMBRE"));
+                dbs.insert(DBhelper.TABLE_PVMESA, null, cv);
+            }
+
+
+        } catch (SQLException e) {
+            System.out.println( "error pvcat1 " + e);
+        }
+
+        //////UPDATE PVMESA
+        try {
+
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                ContentValues cv = new ContentValues();
                 cv.put(DBhelper.KEY_MESA_MESERO, rs.getString("CE_MESERO"));
                 cv.put(DBhelper.KEY_HABI, rs.getString("CE_HABI"));
                 cv.put(DBhelper.KEY_GUEST, "Conrado Gonzalez");
                 cv.put(DBhelper.KEY_PAX, rs.getInt("CE_PAX"));
-                dbs.insert(DBhelper.TABLE_PVMESA, null, cv);
+                dbs.update(DBhelper.TABLE_PVMESA,cv,"MESA='"+rs.getString("CE_MESA")+"'",null);
             }
 
             stmt.close();

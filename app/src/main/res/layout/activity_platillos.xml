@@ -52,16 +52,6 @@
             android:id="@+id/laymenu" />
     </ScrollView>
 
-    <Button
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:id="@+id/btncomand"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:background="@drawable/comanda"
-        android:layout_above="@+id/laybtns" />
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -74,20 +64,11 @@
 
         <TextView
             android:text="@string/producto"
-            android:layout_width="290dp"
+            android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:id="@+id/textView3"
             android:textSize="18sp"
             android:fontFamily="monospace"
-            tools:ignore="UnusedAttribute" />
-
-        <TextView
-            android:text="@string/cantidad"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView5"
-            android:fontFamily="monospace"
-            android:textSize="18sp"
             tools:ignore="UnusedAttribute" />
 
         <TextView
@@ -111,7 +92,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="350dp"
         android:orientation="vertical"
         android:layout_below="@+id/lay_cmd_titulos"
         android:id="@+id/laycmdread" >
@@ -120,6 +101,39 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/listcmdread" />
+    </LinearLayout>
+    <TextView
+        android:text="@string/comentarios"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/laycmdread"
+        android:id="@+id/textView2"
+        android:textSize="18sp"
+        android:textAlignment="center" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView2"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/txtcmdcoment"
+        android:focusableInTouchMode="false" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/txtcmdcoment"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:text="@string/enviar"
+            android:layout_width="match_parent"
+            android:id="@+id/btncmdsend"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            tools:ignore="ButtonStyle" />
+
     </LinearLayout>
 
 </RelativeLayout>

@@ -47,15 +47,6 @@
             tools:ignore="HardcodedText,UnusedAttribute" />
 
         <TextView
-            android:text="CANTIDAD"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView5"
-            android:fontFamily="monospace"
-            android:textSize="18sp"
-            tools:ignore="HardcodedText,UnusedAttribute" />
-
-        <TextView
             android:text="COMENSAL"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
