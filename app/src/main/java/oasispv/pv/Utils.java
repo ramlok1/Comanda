@@ -1,16 +1,49 @@
 package oasispv.pv;
 import java.io.*;
 import java.net.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 //import org.apache.http.conn.util.InetAddressUtils;
 
 public class Utils {
 
-    /**
-     * Convert byte array to hex string
-     * @param bytes
-     * @return
-     */
+    public static final String FORMATO_FECHA = "dd/MM/yy";
+    public static final String FORMATO_HORA = "HH:mm";
+    public static final String FORMATO_FECHAHORA = "yyyy-MM-dd'T'HH:mm:ss";
+
+    public static String DateToString(String d) {
+        DateFormat formatter = new SimpleDateFormat(FORMATO_FECHA);
+        return (formatter.format(d));
+    }
+
+    public static String Hora(Date d) {
+        DateFormat formatter = new SimpleDateFormat(FORMATO_HORA);
+        return (formatter.format(d));
+    }
+
+    public static String fecha(Date d) {
+        DateFormat formatter = new SimpleDateFormat(FORMATO_FECHA);
+        return (formatter.format(d));
+    }
+
+    public static String DateToString2(Date d) {
+        DateFormat formatter = new SimpleDateFormat(FORMATO_FECHAHORA);
+        return (formatter.format(d));
+    }
+
+    public static String replace(String source, String replace, String by) {
+        if (source != null) {
+            return source.toUpperCase().replaceAll(replace.toUpperCase(), by);
+        }
+
+        return "";
+    }
+
+    public static boolean isNull(Object o) {
+        return o == null;
+    }
+
     public static String bytesToHex(byte[] bytes) {
         StringBuilder sbuf = new StringBuilder();
         for(int idx=0; idx < bytes.length; idx++) {

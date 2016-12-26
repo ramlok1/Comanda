@@ -1,6 +1,8 @@
 package oasispv.pv;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.ActionBar;
@@ -19,6 +21,7 @@ import android.widget.PopupWindow;
 import java.util.ArrayList;
 
 public class comanda extends AppCompatActivity {
+    Button addpr,closecmd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +33,28 @@ public class comanda extends AppCompatActivity {
         ActionBar backbtn = getSupportActionBar();
         backbtn.setDisplayHomeAsUpEnabled(true);
         ver_comanda();
+
+        addpr = (Button) findViewById(R.id.btnaddpr);
+        closecmd = (Button) findViewById(R.id.btncerrarcmd);
+        addpr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), platillos.class);
+                startActivity(intent);
+            }
+        });
+        closecmd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DBhelper  dbhelper = new DBhelper(getApplicationContext());
+                SQLiteDatabase dbs = dbhelper.getWritableDatabase();
+                ContentValues cv = new ContentValues();
+                cv.put(DBhelper.CMD_STATUS,"C");
+                dbs.update(DBhelper.TABLE_COMANDA,cv,"STATUS='E' AND SESION='"+variables.sesion+"' AND MESA='"+variables.mesa+"'",null);
+
+            }
+        });
+
     }
 
 
@@ -37,7 +62,7 @@ public class comanda extends AppCompatActivity {
 
         DBhelper  dbhelper = new DBhelper(getApplicationContext());
         SQLiteDatabase dbs = dbhelper.getWritableDatabase();
-        String query = "SELECT ID,PRDESC,CANTIDAD,COMENSAL,TIEMPO,NOTA FROM " + DBhelper.TABLE_COMANDA + " WHERE MESA='" + variables.mesa + "'  AND STATUS='A' AND SESION='"+variables.sesion+"'";
+        String query = "SELECT ID,PRDESC,CANTIDAD,COMENSAL,TIEMPO,NOTA FROM " + DBhelper.TABLE_COMANDA + " WHERE MESA='" + variables.mesa + "'  AND STATUS='E' AND SESION='"+variables.sesion+"'";
         Cursor rs = dbs.rawQuery(query, null);
         ArrayList<datoscomanda> datos = new ArrayList<>();
 
@@ -67,6 +92,7 @@ public class comanda extends AppCompatActivity {
 
 
         }
+        dbs.close();
 
 
 

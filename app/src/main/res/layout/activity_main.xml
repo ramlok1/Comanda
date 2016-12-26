@@ -15,12 +15,14 @@
 
     <ImageView
         android:layout_width="match_parent"
-        app:srcCompat="@drawable/logo"
+        app:srcCompat="@drawable/careyes"
         android:id="@+id/imageView"
         android:contentDescription="Logo"
         tools:ignore="HardcodedText"
         android:layout_height="219dp"
         android:layout_weight="0.30" />
+
+
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -32,6 +34,24 @@
             android:hint="@string/usuario"
             android:layout_weight="1"
             android:id="@+id/usrtxt"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:capitalize="characters"
+            android:maxLines="1"
+            tools:ignore="Deprecated" />
+    </android.support.design.widget.TextInputLayout>
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:hint="Contraseña"
+            android:layout_weight="1"
+            android:id="@+id/pwdtxt"
             android:textSize="30sp"
             android:textStyle="bold"
             android:textAlignment="center"

@@ -6,8 +6,18 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBhelper extends SQLiteOpenHelper {
 
-    // Logcat tag
-    private static final String LOG = "DatabaseHelper";
+
+    private static DBhelper mInstance = null;
+
+    public static DBhelper getInstance(Context ctx) {
+
+        // Use the application context, which will ensure that you
+        // don't accidentally leak an Activity's context.
+        if (mInstance == null) {
+            mInstance = new DBhelper(ctx.getApplicationContext());
+        }
+        return mInstance;
+    }
 
     // Database Version
     private static final int DATABASE_VERSION = 1;
@@ -33,6 +43,8 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String TABLE_SESION = "SESION";
     public static final String TABLE_PRMOD = "PRMOD";
     public static final String TABLE_COMANDAENC = "COMANDAENC";
+    public static final String TABLE_PVRVANOMBRE = "PVRVANOMBRE";
+    public static final String TABLE_BRAZA = "BRAZALETES";
 
     // Common column names
     public static final String KEY_ID = "id";
@@ -65,6 +77,7 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String KEY_PM_PRODUCTO_DESC = "PM_PRODUCTO_DESC";
     public static final String KEY_PM_POS = "PM_POS";
     public static final String KEY_PM_PRECIO = "PM_PRECIO";
+    public static final String KEY_PM_IVA = "PM_IVA";
     public static final String KEY_PM_CARTA = "PM_CARTA";
     public static final String KEY_PM_COMISION = "PM_COMISION";
     public static final String KEY_PM_PROPINA = "PM_PROPINA";
@@ -115,6 +128,7 @@ public class DBhelper extends SQLiteOpenHelper {
 
     // TABLA COMANDAENC
     public static final String CE_SESION = "CE_SESION";
+    public static final String CE_TRANSA = "CE_TRANSA";
     public static final String CE_MESA = "CE_MESA";
     public static final String CE_MESERO = "CE_MESERO";
     public static final String CE_STATUS = "CE_STATUS";
@@ -136,13 +150,16 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String MG_DESC = "MG_DESC";
     public static final String MG_MANDAT = "MG_MANDAT";
 
-    // TABLA PVMODOCG
+    // TABLA PVMODCG
     public static final String CG_COMANDA = "CG_COMANDA";
     public static final String CG_COMANDA_DET = "CG_COMANDA_DET";
     public static final String CG_PRODUCTO = "CG_PRODUCTO";
     public static final String CG_GRUPO= "CG_GRUPO";
+    public static final String CG_GRUPO_DESC= "CG_GRUPO_DESC";
     public static final String CG_MODO= "CG_MODO";
     public static final String CG_DESC= "CG_DESC";
+    public static final String CG_MANDA= "CG_MANDA";
+    public static final String CG_DEFAULT= "CG_DEFAULT";
     public static final String CG_SELECCION= "CG_SELECCION";
 
     // TABLA PVMODGUAR
@@ -151,6 +168,7 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String GU_PRODUCTO = "GU_PRODUCTO";
     public static final String GU_GUAR = "GU_GUAR";
     public static final String GU_DESC = "GU_DESC";
+    public static final String GU_DEFAULT= "GU_DEFAULT";
     public static final String GU_SELECCION = "GU_SELECCION";
 
 
@@ -163,8 +181,27 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String PD_PRODUCTO = "PD_PRODUCTO";
     public static final String PD_DESC = "PD_DESC";
 
+    // TABLA PVRVANOMBRE
+    public static final String PN_RESERVA = "PN_RESERVA";
+    public static final String PN_HABI= "PN_HABI";
+    public static final String PN_NOMBRE= "PN_NOMBRE";
+    // TABLA BRAZALETES
+    public static final String BU_RESERVA = "BU_RESERVA";
+    public static final String BU_FOLIO = "BU_FOLIO";
+
 
     // Table Create Statements
+
+    // CREAR TABLA PVRVANOMBRE
+    private static final String CREATE_TABLE_PVRVANOMBRE = "CREATE TABLE "
+            + TABLE_PVRVANOMBRE + "(" + PN_RESERVA + " TEXT,"+ PN_HABI + " TEXT,"
+            + PN_NOMBRE + " TEXT"
+            + ")";
+    // CREAR TABLA BRAZALETES
+    private static final String CREATE_TABLE_BRAZA = "CREATE TABLE "
+            + TABLE_BRAZA + "(" + BU_RESERVA + " TEXT,"
+            + BU_FOLIO + " TEXT"
+            + ")";
     // CREAR TABLA PRMOD
     private static final String CREATE_TABLE_PRMOD = "CREATE TABLE "
             + TABLE_PRMOD + "(" + PD_PRODUCTO + " TEXT,"
@@ -173,7 +210,7 @@ public class DBhelper extends SQLiteOpenHelper {
     // CREAR TABLA COMANDAENC
     private static final String CREATE_TABLE_COMANDAENC = "CREATE TABLE "
             + TABLE_COMANDAENC + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + CE_SESION + " TEXT,"+ CE_MESA + " TEXT,"
+            + CE_SESION + " TEXT,"+ CE_TRANSA + " TEXT,"+ CE_MESA + " TEXT,"
             + CE_MESERO + " TEXT,"+ CE_STATUS + " TEXT"
             + ")";
     // CREAR TABLA PVPRODUCTOSMODOSG
@@ -190,24 +227,24 @@ public class DBhelper extends SQLiteOpenHelper {
     // CREAR TABLA PVMODCG
     private static final String CREATE_TABLE_PVMODCG = "CREATE TABLE "
             + TABLE_PVMODCG + "(" + CG_COMANDA + " INTEGER,"+ CG_COMANDA_DET + " INTEGER,"
-            + CG_PRODUCTO + " TEXT,"+ CG_GRUPO + " TEXT,"+ CG_MODO + " TEXT,"+ CG_DESC + " TEXT,"
-            + CG_SELECCION + " TEXT"
+            + CG_PRODUCTO + " TEXT,"+ CG_GRUPO + " TEXT,"+CG_GRUPO_DESC + " TEXT,"+ CG_MODO + " TEXT,"+ CG_DESC + " TEXT,"
+            + CG_MANDA + " TEXT," +CG_DEFAULT + " TEXT," +CG_SELECCION + " TEXT"
             + ")";
     // CREAR TABLA PVGUAR
     private static final String CREATE_TABLE_PVGUAR = "CREATE TABLE "
             + TABLE_PVGUAR + "(" + GU_COMANDA + " INTEGER,"+ GU_COMANDA_DET + " INTEGER,"
-            + GU_PRODUCTO + " TEXT,"+ GU_GUAR + " TEXT,"+ GU_DESC + " TEXT,"+ GU_SELECCION + " TEXT"
+            + GU_PRODUCTO + " TEXT,"+ GU_GUAR + " TEXT,"+ GU_DESC + " TEXT,"+ GU_DEFAULT + " TEXT"+ GU_SELECCION + " TEXT"
             + ")";
     // CREAR TABLA PVMODCG_TMP
     private static final String CREATE_TABLE_TMP_PVMODCG = "CREATE TABLE "
             + TABLE_TMP_PVMODCG + "(" + CG_COMANDA + " INTEGER,"
-            + CG_PRODUCTO + " TEXT,"+ CG_GRUPO + " TEXT,"+ CG_MODO + " TEXT,"+ CG_DESC + " TEXT,"
-            + CG_SELECCION + " TEXT"
+            + CG_PRODUCTO + " TEXT,"+ CG_GRUPO + " TEXT,"+CG_GRUPO_DESC + " TEXT,"+ CG_MODO + " TEXT,"+ CG_DESC + " TEXT,"
+            + CG_MANDA + " TEXT," + CG_DEFAULT + " TEXT," + CG_SELECCION + " TEXT"
             + ")";
     // CREAR TABLA PVGUAR_TMP
     private static final String CREATE_TABLE_TMP_PVGUAR = "CREATE TABLE "
             + TABLE_TMP_PVGUAR + "(" + GU_COMANDA + " INTEGER,"
-            + GU_PRODUCTO + " TEXT,"+ GU_GUAR + " TEXT,"+ GU_DESC + " TEXT,"+ GU_SELECCION + " TEXT"
+            + GU_PRODUCTO + " TEXT,"+ GU_GUAR + " TEXT,"+ GU_DESC + " TEXT,"+ GU_DEFAULT + " TEXT"+ GU_SELECCION + " TEXT"
             + ")";
     // CREAR TABLA PVMODOSG
     private static final String CREATE_TABLE_PVMODOSG = "CREATE TABLE "
@@ -252,7 +289,7 @@ public class DBhelper extends SQLiteOpenHelper {
             + KEY_PM_MOVI + " TEXT,"+ KEY_PM_FASE + " TEXT,"+KEY_PM_CAT1+" TEXT,"
             + KEY_PM_CAT2 + " TEXT,"+ KEY_PM_PRODUCTO + " TEXT,"
             + KEY_PM_PRODUCTO_DESC + " TEXT,"+ KEY_PM_POS + " INTEGER,"
-            + KEY_PM_PRECIO + " INTEGER,"+ KEY_PM_CARTA + " TEXT,"
+            + KEY_PM_PRECIO + " INTEGER,"+ KEY_PM_IVA + " INTEGER,"+ KEY_PM_CARTA + " TEXT,"
             + KEY_PM_COMISION + " INTEGER,"+ KEY_PM_PROPINA + " INTEGER,"
             + KEY_PM_FAMILIA + " TEXT,"+ KEY_PM_GRUPOPR + " TEXT,"
             + KEY_PM_SUBFAMILIAPR + " TEXT,"+ KEY_PM_MODI + " TEXT,"+ KEY_PM_GUAR + " TEXT"
@@ -304,6 +341,8 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_PRMOD);
         db.execSQL(CREATE_TABLE_COMANDAENC);
         db.execSQL(CREATE_TABLE_PVPRODUCTOSMODOSG);
+        db.execSQL(CREATE_TABLE_BRAZA);
+        db.execSQL(CREATE_TABLE_PVRVANOMBRE);
 
 
     }
@@ -328,6 +367,8 @@ public class DBhelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRMOD);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMANDAENC);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PVPRODUCTOSMODOSG);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BRAZA);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PVRVANOMBRE);
 
 
         // create new tables

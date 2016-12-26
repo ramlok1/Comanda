@@ -47,6 +47,7 @@ public class lmg_adapter extends BaseAdapter {
         TextView txtsel;
 
 
+
         //http://developer.android.com/intl/es/reference/android/view/LayoutInflater.html
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -67,7 +68,8 @@ public class lmg_adapter extends BaseAdapter {
 
         if(lista.get(position).def.equals("S")) {
 
-            txtmg.setBackgroundColor(Color.BLUE);
+            itemView.setBackgroundResource(R.drawable.shapesel);
+
         }
 
         return itemView;

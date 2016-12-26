@@ -20,7 +20,7 @@ public  class variables {
     public static int sesion;
     public static int comensal;
     public static int tiempo;
-    public static int cmd;
+    public static String cmd;
     public static int max_id;
     public static String modipv;
     public static String mandatory;

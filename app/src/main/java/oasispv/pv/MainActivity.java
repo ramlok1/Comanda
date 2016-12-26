@@ -27,9 +27,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
     private DBhelper dbhelper;
+    private SQLiteDatabase dbs;
     Button btnini;
     TextView txtuser;
+    TextView txtpwd;
     ConnectOra db;
+    Connection conexion;
 
 
 
@@ -38,50 +41,79 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        dbhelper = DBhelper.getInstance(getApplicationContext());
+        dbs = dbhelper.getWritableDatabase();
+
         super.onCreate(savedInstanceState);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                 .permitNetwork().build();
         StrictMode.setThreadPolicy(policy);
         setContentView(R.layout.activity_main);
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 
 
         btnini= (Button) findViewById(R.id.btnini);
         txtuser= (TextView) findViewById(R.id.usrtxt);
+        txtpwd= (TextView) findViewById(R.id.pwdtxt);
+
 
         btnini.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                variables.mesero=txtuser.getText().toString().trim();
+                String usr=txtuser.getText().toString().trim();
+                String pwd=txtpwd.getText().toString().trim();
+                int loging = 0;
+               // db = new ConnectOra(variables.ip, variables.cn, "CIELO", variables.pw);
+                try {
+                    loging = db.getlogin(usr,pwd);
 
-              /*  if (variables.mesero.equalsIgnoreCase("")){
-                    Toast.makeText(getApplicationContext(),"Usuario vacio",Toast.LENGTH_LONG).show();
-                }else{*/
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
 
-                dbhelper = new DBhelper(getApplicationContext());
-                SQLiteDatabase dbs = dbhelper.getWritableDatabase();
-                dbs.delete(DBhelper.TABLE_SESION, null, null);
-                ContentValues cv = new ContentValues();
-                cv.put(DBhelper.SES_MESERO,variables.mesero);
-                cv.put(DBhelper.SES_MOVI,variables.movi);
-                cv.put(DBhelper.SES_FASE, variables.fase);
-                cv.put(DBhelper.SES_STATUS, "A");
-                dbs.insert(DBhelper.TABLE_SESION, null, cv);
+                if (loging==1) {
+                    //db = new ConnectOra(variables.ip, variables.cn, variables.un, variables.pw);
+                    variables.mesero = txtuser.getText().toString().trim();
 
-                Intent intent = new Intent(getApplicationContext(), tables.class);
-                startActivity(intent);
+                    //dbhelper = new DBhelper(getApplicationContext());
+                    //SLiteDatabase dbs = dbhelper.getWritableDatabase();
+                    dbs.delete(DBhelper.TABLE_SESION, null, null);
+                    ContentValues cv = new ContentValues();
+                    cv.put(DBhelper.SES_MESERO, variables.mesero);
+                    cv.put(DBhelper.SES_MOVI, variables.movi);
+                    cv.put(DBhelper.SES_FASE, variables.fase);
+                    cv.put(DBhelper.SES_STATUS, "A");
+                    dbs.insert(DBhelper.TABLE_SESION, null, cv);
 
+                    Intent intent = new Intent(getApplicationContext(), tables.class);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(getApplicationContext(),"Hay problemas con el usuario, favor verificar Usuario y Contraseña",Toast.LENGTH_LONG).show();
+                }
 
             }
         });
-        new datostablet().execute(); // Proceso verifica restaurante y conexion
+        new datostablet().execute();
 
 
 
 
 
     }
+
+    @Override
+    protected void onDestroy(){
+        super.onStop();
+        dbs.close();
+        try {
+            conexion.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public class datostablet extends AsyncTask<String,String,String>{
         final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this,R.style.AppTheme_Dark_Dialog);
 
@@ -101,7 +133,7 @@ public class MainActivity extends AppCompatActivity{
             super.onPostExecute(resp);
             progressDialog.dismiss();
             btnini.setText(variables.movi_desc);
-            Toast.makeText(getApplicationContext(),resp,Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),resp,Toast.LENGTH_SHORT).show();
 
         }
 
@@ -121,13 +153,14 @@ public class MainActivity extends AppCompatActivity{
 
 
     public String llenatablas() {
+
         String res = "";
-        Connection conexion = db.getConexion();
         Statement stmt = null;
         String movi = variables.movi;
         String fase = variables.fase;
-        dbhelper = new DBhelper(getApplicationContext());
-        SQLiteDatabase dbs = dbhelper.getWritableDatabase();
+        conexion = db.getConexion();
+
+
         //borrar datos existentes
         dbs.delete(DBhelper.TABLE_PVCAT1, null, null);
         dbs.delete(DBhelper.TABLE_PVCAT2, null, null);
@@ -160,6 +193,12 @@ public class MainActivity extends AppCompatActivity{
         String queryPVMODOSGPR = " SELECT GP_PRODUCTO, GP_GRUPO,MG_DESC " +
                 "FROM PVPRODUCTOSMODOSG,PVMODOSG WHERE MG_GRUPO=GP_GRUPO";
 
+        String queryRVANMES = "SELECT RV_RESERVA,RV_HABI,NOMBRE " +
+                "FROM PVRVANOMBRE";
+
+        String queryBRAZA = " SELECT BU_RESERVA,BU_FOLIO " +
+                "FROM PVPRODUCTOSMODOSG";
+
 
         String querypvmenus = " SELECT PM_MOVI, PM_FASE, PM_CAT1, PM_CAT2, PM_PRODUCTO,PR_DESC, PM_POS, PM_PRECIO, PM_CARTA, PM_COMISION, PM_PROPINA, PM_FAMILIA, PM_GRUPOPR, PM_SUBFAMILIAPR" +
                 " FROM PVMENUS,PVPRODUCTOS WHERE PM_MOVI='" + movi + "' AND PM_FASE='" + fase + "' AND PR_PRODUCTO=PM_PRODUCTO AND PR_ACTIVO='S'";
@@ -175,6 +214,36 @@ public class MainActivity extends AppCompatActivity{
                 cv.put(DBhelper.GP_GRUPO, rs.getString("GP_GRUPO"));
                 cv.put(DBhelper.GP_GRUPO_DESC, rs.getString("MG_DESC"));
                 dbs.insert(DBhelper.TABLE_PVPRODUCTOSMODOSG, null, cv);
+            }
+
+        } catch (SQLException e) {
+            res = "error pvcat1 " + e;
+        }
+        //////INSERTA PVRCANOMBRE
+        try {
+
+            ResultSet rs = stmt.executeQuery(queryRVANMES);
+            while (rs.next()) {
+                ContentValues cv = new ContentValues();
+                cv.put(DBhelper.PN_RESERVA, rs.getString("RV_RESERVA"));
+                cv.put(DBhelper.PN_HABI, rs.getString("RV_HABI"));
+                cv.put(DBhelper.PN_NOMBRE, rs.getString("NOMBRE"));
+                dbs.insert(DBhelper.TABLE_PVMODOSG, null, cv);
+            }
+
+        } catch (SQLException e) {
+            res = "error pvcat1 " + e;
+        }
+        //////INSERTA BRAZALETE
+        try {
+
+            ResultSet rs = stmt.executeQuery(queryBRAZA);
+            while (rs.next()) {
+                ContentValues cv = new ContentValues();
+                cv.put(DBhelper.BU_RESERVA, rs.getString("BU_RESERVA"));
+                cv.put(DBhelper.BU_FOLIO, rs.getString("BU_FOLIO"));
+
+                dbs.insert(DBhelper.TABLE_PVMODOSG, null, cv);
             }
 
         } catch (SQLException e) {
@@ -305,7 +374,7 @@ public class MainActivity extends AppCompatActivity{
                 dbs.insert(DBhelper.TABLE_PVMENUS, null, cv);
             }
             stmt.close();
-            dbs.close();
+
         } catch (SQLException e) {
             res = "error pvmenu " + e;
         }
@@ -318,8 +387,7 @@ public class MainActivity extends AppCompatActivity{
 
         String mac = Utils.getMACAddress("wlan0");
         String res = "";
-        dbhelper = new DBhelper(getApplicationContext());
-        SQLiteDatabase dbs = dbhelper.getReadableDatabase();
+
 
         String selectlocal = "select * from " + DBhelper.TABLE_CONNECT + " where " + DBhelper.KEY_TIPO + "='local'";
         String selectremoto = "select * from " + DBhelper.TABLE_CONNECT + " where " + DBhelper.KEY_TIPO + "='remote'";
@@ -350,14 +418,15 @@ public class MainActivity extends AppCompatActivity{
                     pw = c.getString(c.getColumnIndex(DBhelper.KEY_PW));
 
                     db = new ConnectOra(ip, cn, un, pw);
-                    Connection conexion = db.getConexion();
+                    conexion = db.getConexion();
+
 
                     try {
                         stmt = conexion.createStatement();
                        /* String selectpv = "select PT_NOMBRE, PT_PV, PT_FASE, PT_UN, PT_CN, PT_PW, PT_IP_PV" +
                                 " FROM PVXTABLET where PT_MAC='" + mac + "'";*/
                         String selectpv = "select PT_NOMBRE, PT_PV, PT_FASE, PT_UN, PT_CN, PT_PW, PT_IP_PV,PT_MODI" +
-                                " FROM PVXTABLET where PT_MAC='"+mac+"'";
+                                " FROM PVXTABLET where PT_MAC='EMULADOR'";
 
                         ResultSet rs = stmt.executeQuery(selectpv);
                         while (rs.next()) {
@@ -385,8 +454,8 @@ public class MainActivity extends AppCompatActivity{
                             variables.movi_desc=rs.getString("PT_NOMBRE");
                         }
                         stmt.close();
-                        dbs.close();
-                        conexion.close();
+
+
 
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -405,14 +474,14 @@ public class MainActivity extends AppCompatActivity{
                     cv.put(DBhelper.KEY_IP, "192.168.1.8");
                     cv.put(DBhelper.KEY_NAME_C, "CONEXION CRONOS");
                     dbs.insert(DBhelper.TABLE_CONNECT, null, cv);
-                    dbs.close();
+
                     verificatablet();
                 }
 
             }
 
 
-            dbs.close();
+
 
 
             if (res == "") {
@@ -423,10 +492,6 @@ public class MainActivity extends AppCompatActivity{
 
     }
     private void verifica_mod_guar() {
-
-
-        dbhelper = new DBhelper(getApplicationContext());
-        SQLiteDatabase dbs = dbhelper.getReadableDatabase();
 
         String query = "SELECT PM_PRODUCTO FROM " + DBhelper.TABLE_PVMENUS + " WHERE PM_MOVI='" + variables.movi + "' AND PM_FASE='" + variables.fase + "'";
 

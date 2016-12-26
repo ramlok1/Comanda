@@ -2,6 +2,7 @@ package oasispv.pv;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
@@ -28,6 +29,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +41,8 @@ public class platillos extends AppCompatActivity {
     String movi = variables.movi;
     String fase = variables.fase;
     Bundle extras;
-    Button btncomanda;
+    Button btnccmdsend;
+    ConnectOra db = new ConnectOra(variables.ip,variables.cn,variables.un,variables.pw);
 
 
 
@@ -71,6 +74,25 @@ public class platillos extends AppCompatActivity {
         backbtn.setDisplayHomeAsUpEnabled(true);
         muestra_cmdtmp();
         scrollcat1();
+        btnccmdsend = (Button) findViewById(R.id.btncmdsend);
+        btnccmdsend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                try {
+                    db.inserta_comanda_det(dbhelper);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                ContentValues cv = new ContentValues();
+                cv.put(DBhelper.CMD_STATUS,"E");
+                dbs.update(DBhelper.TABLE_COMANDA,cv,"STATUS='A' AND SESION='"+variables.sesion+"' AND MESA='"+variables.mesa+"'",null);
+                Intent intent = new Intent(getApplicationContext(), tables.class);
+                startActivity(intent);
+                Toast.makeText(getApplicationContext(),"Enviado a Producción",Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 
 
@@ -105,7 +127,7 @@ public class platillos extends AppCompatActivity {
 
                 btn.setLayoutParams(new LinearLayout.LayoutParams(120, LinearLayout.LayoutParams.MATCH_PARENT));
                 btn.setText(rs.getString(rs.getColumnIndex(DBhelper.KEY_CAT1_DESC)));
-
+                btn.setBackgroundResource(R.drawable.shapecat1);
                 data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_CAT1)));
                 data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_CAT1_DESC)));
                 btn.setTag(data);
@@ -172,10 +194,10 @@ public class platillos extends AppCompatActivity {
                     btnsContainer.addView(contenedor2);
                 }
                 Button btn = new Button(this);
-                List<String> data = new ArrayList<String>();
+                List<String> data = new ArrayList<>();
                 btn.setLayoutParams(new LinearLayout.LayoutParams(120, LinearLayout.LayoutParams.MATCH_PARENT));
                 btn.setText(rs.getString(rs.getColumnIndex(DBhelper.KEY_CAT2_DESC)));
-
+                btn.setBackgroundResource(R.drawable.shapecat2);
                 data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_CAT2)));
                 data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_CAT2_DESC)));
                 btn.setTag(data);
@@ -243,6 +265,7 @@ public class platillos extends AppCompatActivity {
                 List<String> data = new ArrayList<>();
                 btn.setLayoutParams(new LinearLayout.LayoutParams(120, LinearLayout.LayoutParams.MATCH_PARENT));
                 btn.setText(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_PRODUCTO_DESC)));
+                btn.setBackgroundResource(R.drawable.shapeplat);
                 data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_PRODUCTO)));
                 data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_PRODUCTO_DESC)));
                 data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_MODI)));
@@ -498,10 +521,17 @@ public class platillos extends AppCompatActivity {
                     cv.put(DBhelper.CG_COMANDA_DET, variables.max_id);
                     cv.put(DBhelper.CG_PRODUCTO, prid);
                     cv.put(DBhelper.CG_GRUPO, rs.getString(rs.getColumnIndex("CG_GRUPO")));
+                    cv.put(DBhelper.CG_GRUPO_DESC, rs.getString(rs.getColumnIndex("CG_GRUPO_DESC")));
                     cv.put(DBhelper.CG_MODO, rs.getString(rs.getColumnIndex("CG_MODO")));
                     cv.put(DBhelper.CG_DESC, rs.getString(rs.getColumnIndex("CG_DESC")));
+                    cv.put(DBhelper.CG_MANDA, rs.getString(rs.getColumnIndex("CG_MANDA")));
+                    cv.put(DBhelper.CG_DEFAULT, rs.getString(rs.getColumnIndex("CG_DEFAULT")));
                     cv.put(DBhelper.CG_SELECCION, rs.getString(rs.getColumnIndex("CG_SELECCION")));
                     dbs.insert(DBhelper.TABLE_PVMODCG, null, cv);
+
+
+
+
 
                     if(rs.getString(rs.getColumnIndex("CG_SELECCION")).equals("S")){
                         nota=nota+","+rs.getString(rs.getColumnIndex("CG_DESC"));
@@ -525,6 +555,7 @@ public class platillos extends AppCompatActivity {
                     cv.put(DBhelper.GU_PRODUCTO, prid);
                     cv.put(DBhelper.GU_GUAR, rs.getString(rs.getColumnIndex("GU_GUAR")));
                     cv.put(DBhelper.GU_DESC, rs.getString(rs.getColumnIndex("GU_DESC")));
+                    cv.put(DBhelper.GU_DEFAULT, rs.getString(rs.getColumnIndex("GU_DEFAULT")));
                     cv.put(DBhelper.GU_SELECCION, rs.getString(rs.getColumnIndex("GU_SELECCION")));
                     dbs.insert(DBhelper.TABLE_PVGUAR, null, cv);
 
@@ -712,11 +743,12 @@ public class platillos extends AppCompatActivity {
 
         String query = "SELECT MD_GRUPO,MD_MODO,MD_DESC,MD_DEFAULT FROM " + DBhelper.TABLE_PVMODOS + " WHERE MD_GRUPO='" + mod + "'";
         String querytmp = "SELECT CG_GRUPO,CG_MODO,CG_DESC,CG_SELECCION FROM " + DBhelper.TABLE_TMP_PVMODCG + " WHERE CG_COMANDA=" + variables.cmd + " AND CG_PRODUCTO='"+pr+"' AND CG_GRUPO='"+mod+"'";
-        String manda ="SELECT MG_MANDAT FROM "+DBhelper.TABLE_PVMODOSG+" WHERE MG_GRUPO='"+mod+"'";
+        String manda ="SELECT MG_DESC,MG_MANDAT FROM "+DBhelper.TABLE_PVMODOSG+" WHERE MG_GRUPO='"+mod+"'";
 
         Cursor m = dbs.rawQuery(manda,null);
         m.moveToFirst();
         variables.mandatory= m.getString(m.getColumnIndex(DBhelper.MG_MANDAT));
+        String g_desc = m.getString(m.getColumnIndex(DBhelper.MG_DESC));
 
         ArrayList<datosmod> datos = new ArrayList<>();
         long countmd= DatabaseUtils.queryNumEntries(dbs,DBhelper.TABLE_TMP_PVMODCG,"CG_COMANDA="+variables.cmd+" AND CG_PRODUCTO='"+pr+"' AND CG_GRUPO='"+mod+"'");
@@ -744,8 +776,11 @@ public class platillos extends AppCompatActivity {
                         cv.put(DBhelper.CG_COMANDA, variables.cmd);
                         cv.put(DBhelper.CG_PRODUCTO, pr);
                         cv.put(DBhelper.CG_GRUPO, rs.getString(rs.getColumnIndex(DBhelper.MD_GRUPO)));
+                        cv.put(DBhelper.CG_GRUPO_DESC, g_desc);
                         cv.put(DBhelper.CG_MODO, rs.getString(rs.getColumnIndex(DBhelper.MD_MODO)));
                         cv.put(DBhelper.CG_DESC, rs.getString(rs.getColumnIndex(DBhelper.MD_DESC)));
+                        cv.put(DBhelper.CG_MANDA, variables.mandatory);
+                        cv.put(DBhelper.CG_DEFAULT, rs.getString(rs.getColumnIndex(DBhelper.MD_DEFAULT)));
                         cv.put(DBhelper.CG_SELECCION, rs.getString(rs.getColumnIndex(DBhelper.MD_DEFAULT)));
                         dbs.insert(DBhelper.TABLE_TMP_PVMODCG, null, cv);
 
@@ -784,7 +819,7 @@ public class platillos extends AppCompatActivity {
                     if(variables.mandatory.equals("S")){
                         ContentValues v =new ContentValues();
                         v.put(DBhelper.CG_SELECCION,"N");
-                        dbs.update(DBhelper.TABLE_TMP_PVMODCG,v,"CG_COMANDA="+variables.cmd+" AND CG_PRODUCTO='"+pr+"' AND CG_GRUPO='"+mod+"'",null);
+                        dbs.update(DBhelper.TABLE_TMP_PVMODCG,v,"CG_COMANDA='"+variables.cmd+"' AND CG_PRODUCTO='"+pr+"' AND CG_GRUPO='"+mod+"'",null);
                     }
                     if(sel.equalsIgnoreCase("N")) {
                         cv.put(DBhelper.CG_SELECCION, "S");
@@ -792,7 +827,7 @@ public class platillos extends AppCompatActivity {
                         cv.put(DBhelper.CG_SELECCION, "N");
                     }
 
-                    dbs.update(DBhelper.TABLE_TMP_PVMODCG,cv,"CG_COMANDA="+variables.cmd+" AND CG_PRODUCTO='"+pr+"' AND CG_GRUPO='"+mod+"' AND CG_MODO='"+modo+"'",null);
+                    dbs.update(DBhelper.TABLE_TMP_PVMODCG,cv,"CG_COMANDA='"+variables.cmd+"' AND CG_PRODUCTO='"+pr+"' AND CG_GRUPO='"+mod+"' AND CG_MODO='"+modo+"'",null);
                     muestra_modificador(pr,mod,layout);
                 }
             });
@@ -838,6 +873,7 @@ public class platillos extends AppCompatActivity {
                         cv.put(DBhelper.GU_PRODUCTO, pr);
                         cv.put(DBhelper.GU_GUAR, rs.getString(rs.getColumnIndex(DBhelper.MP_MODI)));
                         cv.put(DBhelper.GU_DESC, c.getString(c.getColumnIndex(DBhelper.PD_DESC)));
+                        cv.put(DBhelper.GU_DEFAULT, rs.getString(rs.getColumnIndex(DBhelper.MP_DEFAULT)));
                         cv.put(DBhelper.GU_SELECCION, rs.getString(rs.getColumnIndex(DBhelper.MP_DEFAULT)));
                         dbs.insert(DBhelper.TABLE_TMP_PVGUAR, null, cv);
 

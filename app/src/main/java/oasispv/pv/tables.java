@@ -2,6 +2,7 @@ package oasispv.pv;
 
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,10 +11,16 @@ import android.os.StrictMode;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.Connection;
@@ -27,10 +34,18 @@ import java.util.List;
 public class tables extends AppCompatActivity {
 
     private DBhelper dbhelper;
-    ConnectOra db;
+    private SQLiteDatabase dbs;
+    private Connection conexion;
+    ConnectOra db ;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        dbhelper = DBhelper.getInstance(getApplicationContext());
+        dbs = dbhelper.getWritableDatabase();
+        db = new ConnectOra(variables.ip,variables.cn,variables.un,variables.pw);
+
         super.onCreate(savedInstanceState);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                 .permitNetwork().build();
@@ -38,23 +53,26 @@ public class tables extends AppCompatActivity {
         setContentView(R.layout.activity_tables);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
 
         ActionBar backbtn = getSupportActionBar();
         backbtn.setDisplayHomeAsUpEnabled(true);
+        leersesion();
         actualiza_mesas();
         leermesas();
-        leersesion();
+
 
 
 
 
     }
+
+
     private void leermesas(){
-        String mesero = "N";
-        dbhelper = new DBhelper(getApplicationContext());
-        SQLiteDatabase dbs = dbhelper.getWritableDatabase();
+
+
 
             LinearLayout btnsContainer = (LinearLayout) findViewById(R.id.btnlmaster);
             btnsContainer.removeAllViews();
@@ -64,12 +82,13 @@ public class tables extends AppCompatActivity {
             LinearLayout contenedor = null;
 
 
-            String query = "SELECT MESA,MESA_NAME,HABI,MESA_MESERO FROM " + DBhelper.TABLE_PVMESA + " WHERE MOVI='" + variables.movi + "' AND FASE='" + variables.fase + "'";
+            String query = "SELECT MESA,MESA_NAME,HABI,MESA_MESERO FROM " + DBhelper.TABLE_PVMESA ;
 
             Cursor rs = dbs.rawQuery(query, null);
             if (rs.getCount() > 0) {
                 rs.moveToFirst();
                 do {
+                    String mesero = "N";
                     if (!ban) {
                         ban = true;
                         contenedor = new LinearLayout(this);
@@ -88,9 +107,18 @@ public class tables extends AppCompatActivity {
 
                     //verifica si en la tabla existe registro de mesero para la mesa
                     if (rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_MESERO))!=null){
-                        mesero=rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_MESERO));
+                        mesero = rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_MESERO));
                         btn.setText(rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_NAME)) + "\n" + rs.getString(rs.getColumnIndex(DBhelper.KEY_HABI)) + "\n" + rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_MESERO)));
-                        btn.setBackgroundColor(getResources().getColor(R.color.ambar));
+
+                        if (rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_MESERO)).equalsIgnoreCase(variables.mesero)){
+                                btn.setBackgroundResource(R.drawable.shapebtnmesa_mismo);
+                            }else {
+                               //btn.setBackgroundColor(getResources().getColor(R.color.ambar));
+                                btn.setBackgroundResource(R.drawable.shapebtnmesa);
+                            }
+                    }else{
+                        btn.setBackgroundResource(R.drawable.shapebtnfree);
+
                     }
 
                     datos.add(mesero);
@@ -115,16 +143,12 @@ public class tables extends AppCompatActivity {
 
 
 
-                            variables.cmd = busca_comanda();
-                            if ( variables.cmd==-1) {
-                                genera_comanda();
-                                variables.cmd = busca_comanda();
 
-                            }
                             if(variables.mesero_mesa.equalsIgnoreCase("N")) {
 
-                                startActivity(intent);
+                                popup_window();
                             }else {
+                                variables.cmd=busca_comanda(variables.mesa);
                                 startActivity(intentcomanda);
                             }
 
@@ -142,13 +166,11 @@ public class tables extends AppCompatActivity {
                 }while (rs.moveToNext());
 
             }
-        dbs.close();
+
 
 
     }
     private void leersesion() {
-        dbhelper = new DBhelper(getApplicationContext());
-        SQLiteDatabase dbs = dbhelper.getWritableDatabase();
 
 
 
@@ -165,22 +187,22 @@ public class tables extends AppCompatActivity {
         }else {
             Toast.makeText(getApplicationContext(), "ERROR CON SESION", Toast.LENGTH_LONG).show();
         }
-        dbs.close();
+
 
 
     }
     private void actualiza_mesas(){
 
-        Connection conexion=db.getConexion();
+        conexion=db.getConexion();
         Statement stmt = null;
-        dbhelper = new DBhelper(getApplicationContext());
-        SQLiteDatabase dbs = dbhelper.getWritableDatabase();
+
+
         //borrar datos existentes
         dbs.delete(DBhelper.TABLE_PVMESA, null, null);
 
         String query_mesas = "SELECT PM_MESA,PM_NOMBRE FROM PVMESAS WHERE PM_MOVI='"+variables.movi+"' AND PM_FASE='"+variables.fase+"' AND PM_AREA IS NOT NULL";
 
-        String query = "select CE_MESA,PM_NOMBRE,CE_MESERO, CE_HABI, CE_PAX " +
+        String query = "select CE_TRANSA,CE_MESA,PM_NOMBRE,CE_MESERO, CE_HABI, CE_PAX " +
                 "                 FROM PVCHEQDIAENC,PVMESAS where CE_MOVI='"+variables.movi+"' and CE_FASE='"+variables.fase+"' and CE_CIERRA_F IS NULL" +
                 "                 and CE_CAN_F IS NULL and CE_MESA IS NOT NULL AND PM_MOVI=CE_MOVI AND PM_FASE=CE_FASE AND PM_MESA=CE_MESA";
 
@@ -213,6 +235,8 @@ public class tables extends AppCompatActivity {
                 cv.put(DBhelper.KEY_GUEST, "Conrado Gonzalez");
                 cv.put(DBhelper.KEY_PAX, rs.getInt("CE_PAX"));
                 dbs.update(DBhelper.TABLE_PVMESA,cv,"MESA='"+rs.getString("CE_MESA")+"'",null);
+
+                actualiza_comanda_mesa(rs.getString("CE_TRANSA"),rs.getString("CE_MESA"),rs.getString("CE_MESERO"));
             }
 
             stmt.close();
@@ -224,37 +248,141 @@ public class tables extends AppCompatActivity {
 
 
     }
-    private void genera_comanda(){
+    private void actualiza_comanda_mesa(String transa, String mesa,String mesero) {
 
-        dbhelper = new DBhelper(getApplicationContext());
-        SQLiteDatabase dbs = dbhelper.getWritableDatabase();
+        conexion = db.getConexion();
+        Statement stmt = null;
+
+
+
+
+        String cmd = busca_comanda(mesa);
+        if (cmd.equalsIgnoreCase("N")) {
+            genera_comanda(mesero,mesa,transa);
+            cmd = busca_comanda(mesa);
+
+
+
+        String query = "SELECT CD_PRODUCTO,PR_DESC,CD_CANTIDAD,CD_TIEMPO FROM PVCHEQDIADET,PVPRODUCTOS " +
+                "WHERE CD_MOVI='" + variables.movi + "' AND CD_FASE='" + variables.fase + "' AND CD_CAN_U IS NULL AND CD_TRANSA='" + transa + "' AND PR_PRODUCTO=CD_PRODUCTO";
+
+
+        //////INSERTA PRODUCTOS DE MESA
+        try {
+            stmt = conexion.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+
+            while (rs.next()) {
+                ContentValues cv = new ContentValues();
+                cv.put(DBhelper.CMD_SESION, variables.sesion);
+                cv.put(DBhelper.CMD_MESA, mesa);
+                cv.put(DBhelper.CMD_TRANSA, cmd);
+                cv.put(DBhelper.CMD_PRID, rs.getString("CD_PRODUCTO"));
+                cv.put(DBhelper.CMD_PRDESC, rs.getString("PR_DESC"));
+                cv.put(DBhelper.CMD_CANTIDAD, rs.getInt("CD_CANTIDAD"));
+                cv.put(DBhelper.CMD_COMENSAL, 1);
+                cv.put(DBhelper.CMD_TIEMPO, rs.getInt("CD_TIEMPO"));
+                cv.put(DBhelper.CMD_STATUS, "E");
+                dbs.insert(DBhelper.TABLE_COMANDA, null, cv);
+
+            }
+
+            stmt.close();
+        } catch (SQLException e) {
+            System.out.println("error pvcat1 " + e);
+        }
+    }
+
+
+
+
+    }
+    private void genera_comanda(String mesero,String mesa,String transa){
+
+
+
 
         ContentValues cv = new ContentValues();
         cv.put(DBhelper.CE_SESION, variables.sesion);
-        cv.put(DBhelper.CE_MESA,variables.mesa);
-        cv.put(DBhelper.CE_MESERO, variables.mesero);
+        cv.put(DBhelper.CE_TRANSA, transa);
+        cv.put(DBhelper.CE_MESA,mesa);
+        cv.put(DBhelper.CE_MESERO, mesero);
         cv.put(DBhelper.CE_STATUS, "A");
         dbs.insert(DBhelper.TABLE_COMANDAENC, null, cv);
 
     }
-    private int busca_comanda(){
+    private String busca_comanda(String mesa){
+        dbs = dbhelper.getWritableDatabase();
+        String cmd="N";
 
-        int cmd=-1;
 
-        dbhelper = new DBhelper(getApplicationContext());
-        SQLiteDatabase dbs = dbhelper.getWritableDatabase();
 
-        String query = "SELECT ID FROM " + DBhelper.TABLE_COMANDAENC + " WHERE CE_SESION='" + variables.sesion + "' AND CE_MESA='" + variables.mesa + "' AND CE_STATUS='A'";
+
+        String query = "SELECT CE_TRANSA FROM " + DBhelper.TABLE_COMANDAENC + " WHERE CE_SESION='" + variables.sesion + "' AND CE_MESA='" + mesa + "' AND CE_STATUS='A'";
 
         Cursor rs = dbs.rawQuery(query, null);
         if (rs.moveToFirst()) {
             do {
-                cmd = rs.getInt(rs.getColumnIndex(DBhelper.KEY_ID));
+                cmd = rs.getString(rs.getColumnIndex(DBhelper.CE_TRANSA));
             }while (rs.moveToNext());
 
         }
 
         return cmd;
+
+    }
+    private void popup_window( ) {
+
+        Button btnClosePopup,btnacep;
+        final PopupWindow pwindo;
+
+
+
+
+        LayoutInflater inflat = (LayoutInflater) tables.this
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View layout = inflat.inflate(R.layout.activity_abre_mesa,
+                (ViewGroup) findViewById(R.id.activity_abre_mesa));
+
+
+
+
+
+        pwindo = new PopupWindow(layout, 590,500, true);
+        pwindo.showAtLocation(layout, Gravity.CENTER, 0, -20);
+
+        btnClosePopup = (Button) layout.findViewById(R.id.btnclosepwmesa);
+        btnacep = (Button) layout.findViewById(R.id.btnabrir);
+        btnacep.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String transa="";
+
+                try {
+
+                    transa=db.genera_transa();
+                    genera_comanda(variables.mesero,variables.mesa,transa);
+                    variables.cmd = busca_comanda(variables.mesa);
+                    db.inserta_comanda_enc();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+                Intent intent = new Intent(getApplicationContext(), platillos.class);
+                startActivity(intent);
+            }
+        });
+        btnClosePopup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pwindo.dismiss();
+
+            }
+        });
+
+
+
+
 
     }
 
