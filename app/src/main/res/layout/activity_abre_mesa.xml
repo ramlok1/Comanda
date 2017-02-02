@@ -4,7 +4,6 @@
     android:id="@+id/activity_abre_mesa"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="oasispv.pv.abre_mesa"
     android:background="@drawable/shape"
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp">
@@ -62,13 +61,17 @@
 
         </LinearLayout>
 
-        <TextView
+        <EditText
             android:layout_width="500dp"
             android:layout_height="50dp"
-            android:id="@+id/textView5"
+            android:id="@+id/txtname"
             android:layout_marginTop="30dp"
             android:layout_marginLeft="50dp"
-            android:background="@drawable/shape" />
+            android:background="@drawable/shape"
+            android:fontFamily="monospace"
+            android:textSize="36sp"
+            android:textAlignment="center"
+            android:textColor="@color/black" />
 
         <LinearLayout
             android:orientation="horizontal"
@@ -85,7 +88,8 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Brazalete" />
+                    android:hint="Brazalete"
+                    android:id="@+id/txtbraza" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -98,7 +102,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="PAX"
-                    android:elevation="1dp" />
+                    android:elevation="1dp"
+                    android:id="@+id/txtpax" />
 
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
@@ -114,7 +119,8 @@
                 android:layout_width="200dp"
                 android:layout_height="50dp"
                 android:id="@+id/btntcmd"
-                android:layout_marginLeft="50dp" />
+                android:layout_marginLeft="50dp"
+                android:visibility="invisible" />
 
             <Button
                 android:text="Aceptar"

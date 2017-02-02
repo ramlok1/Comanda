@@ -115,6 +115,8 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String CMD_PRID = "PRID";
     public static final String CMD_PRDESC = "PRDESC";
     public static final String CMD_CANTIDAD = "CANTIDAD";
+    public static final String CMD_PRECIO = "PRECIO";
+    public static final String CMD_CARTA = "CARTA";
     public static final String CMD_COMENSAL = "COMENSAL";
     public static final String CMD_TIEMPO = "TIEMPO";
     public static final String CMD_NOTA = "NOTA";
@@ -185,6 +187,7 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String PN_RESERVA = "PN_RESERVA";
     public static final String PN_HABI= "PN_HABI";
     public static final String PN_NOMBRE= "PN_NOMBRE";
+    public static final String PN_SEC= "PN_SEC";
     // TABLA BRAZALETES
     public static final String BU_RESERVA = "BU_RESERVA";
     public static final String BU_FOLIO = "BU_FOLIO";
@@ -195,7 +198,7 @@ public class DBhelper extends SQLiteOpenHelper {
     // CREAR TABLA PVRVANOMBRE
     private static final String CREATE_TABLE_PVRVANOMBRE = "CREATE TABLE "
             + TABLE_PVRVANOMBRE + "(" + PN_RESERVA + " TEXT,"+ PN_HABI + " TEXT,"
-            + PN_NOMBRE + " TEXT"
+            + PN_NOMBRE + " TEXT,"+ PN_SEC + " INTEGER"
             + ")";
     // CREAR TABLA BRAZALETES
     private static final String CREATE_TABLE_BRAZA = "CREATE TABLE "
@@ -233,7 +236,7 @@ public class DBhelper extends SQLiteOpenHelper {
     // CREAR TABLA PVGUAR
     private static final String CREATE_TABLE_PVGUAR = "CREATE TABLE "
             + TABLE_PVGUAR + "(" + GU_COMANDA + " INTEGER,"+ GU_COMANDA_DET + " INTEGER,"
-            + GU_PRODUCTO + " TEXT,"+ GU_GUAR + " TEXT,"+ GU_DESC + " TEXT,"+ GU_DEFAULT + " TEXT"+ GU_SELECCION + " TEXT"
+            + GU_PRODUCTO + " TEXT,"+ GU_GUAR + " TEXT,"+ GU_DESC + " TEXT,"+ GU_DEFAULT + " TEXT,"+ GU_SELECCION + " TEXT"
             + ")";
     // CREAR TABLA PVMODCG_TMP
     private static final String CREATE_TABLE_TMP_PVMODCG = "CREATE TABLE "
@@ -244,7 +247,7 @@ public class DBhelper extends SQLiteOpenHelper {
     // CREAR TABLA PVGUAR_TMP
     private static final String CREATE_TABLE_TMP_PVGUAR = "CREATE TABLE "
             + TABLE_TMP_PVGUAR + "(" + GU_COMANDA + " INTEGER,"
-            + GU_PRODUCTO + " TEXT,"+ GU_GUAR + " TEXT,"+ GU_DESC + " TEXT,"+ GU_DEFAULT + " TEXT"+ GU_SELECCION + " TEXT"
+            + GU_PRODUCTO + " TEXT,"+ GU_GUAR + " TEXT,"+ GU_DESC + " TEXT,"+ GU_DEFAULT + " TEXT,"+ GU_SELECCION + " TEXT"
             + ")";
     // CREAR TABLA PVMODOSG
     private static final String CREATE_TABLE_PVMODOSG = "CREATE TABLE "
@@ -260,7 +263,7 @@ public class DBhelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_COMANDA = "CREATE TABLE "
             + TABLE_COMANDA + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
             + CMD_SESION + " INTEGER,"+ CMD_MESA + " TEXT,"+ CMD_TRANSA + " TEXT,"
-            + CMD_PRID + " TEXT,"+ CMD_PRDESC + " TEXT,"+ CMD_CANTIDAD + " INTEGER,"
+            + CMD_PRID + " TEXT,"+ CMD_PRDESC + " TEXT,"+ CMD_CANTIDAD + " INTEGER,"+ CMD_PRECIO + " FLOAT,"+ CMD_CARTA + " TEXT,"
             + CMD_COMENSAL + " INTEGER,"+ CMD_TIEMPO + " INTEGER,"+ CMD_NOTA + " TEXT,"
             + CMD_STATUS + " TEXT"
             + ")";

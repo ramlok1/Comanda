@@ -1,5 +1,6 @@
 package oasispv.pv;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,8 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.Message;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -32,16 +35,21 @@ import android.widget.Toast;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Handler;
 
 
 public class platillos extends AppCompatActivity {
-    Button btnClosePopup;
+    Button btnClosePopup,btncoment;
+    EditText txtcomentario;
     private DBhelper dbhelper;
     SQLiteDatabase dbs;
     String movi = variables.movi;
     String fase = variables.fase;
     Bundle extras;
     Button btnccmdsend;
+    ListView laycmdread;
+    listrestadp adapter;
+    Boolean lis=false;
     ConnectOra db = new ConnectOra(variables.ip,variables.cn,variables.un,variables.pw);
 
 
@@ -54,45 +62,85 @@ public class platillos extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
+        toolbar.setTitle(variables.comensal_name);
 
-        /*TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        View view1 = getLayoutInflater().inflate(R.layout.tabicon, null);
-        view1.findViewById(R.id.icon).setBackgroundResource(R.drawable.cocinero);
-        tabLayout.addTab(tabLayout.newTab().setCustomView(view1));*/
 
-       /* btncomanda = (Button) findViewById(R.id.btncomand);
-        btncomanda.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            popup_comanda();
-
-            }
-        });*/
         dbhelper = new DBhelper(getApplicationContext());
         dbs = dbhelper.getWritableDatabase();
         ActionBar backbtn = getSupportActionBar();
         backbtn.setDisplayHomeAsUpEnabled(true);
-        muestra_cmdtmp();
-        scrollcat1();
+
+        txtcomentario = (EditText)  findViewById(R.id.txtcmdcoment);
+        //// Boton para anexar comentario a producto
+        btncoment = (Button) findViewById(R.id.btncoment);
+        btncoment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (v.getTag() != null) {
+                    String comentario = txtcomentario.getText().toString();
+                    int id = ((datoscomanda) v.getTag()).idpr;
+
+
+                    ContentValues cv = new ContentValues();
+                    cv.put(DBhelper.CMD_NOTA, comentario);
+                    dbs.update(DBhelper.TABLE_COMANDA, cv, "STATUS='A' AND SESION='" + variables.sesion + "' AND MESA='" + variables.mesa + "' AND id= " + id + "", null);
+                    muestra_cmdtmp();
+
+                }else{
+                    Toast.makeText(getApplicationContext(),"No hay platillo seleccionado",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // Boton para enviar comanda a impresion
         btnccmdsend = (Button) findViewById(R.id.btncmdsend);
         btnccmdsend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+   if (laycmdread!=null&&laycmdread.getAdapter().getCount()>0){
 
-                try {
-                    db.inserta_comanda_det(dbhelper);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                ContentValues cv = new ContentValues();
-                cv.put(DBhelper.CMD_STATUS,"E");
-                dbs.update(DBhelper.TABLE_COMANDA,cv,"STATUS='A' AND SESION='"+variables.sesion+"' AND MESA='"+variables.mesa+"'",null);
+               final ProgressDialog pd = ProgressDialog.show(platillos.this, "", "Enviando Comanda...");
+                pd.setCancelable(false);
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        // proceso inserta comanda en oracle
+                        try {
+                            db.inserta_comanda_det(dbhelper);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        //actualiza comanda en dispositivo
+                        ContentValues cv = new ContentValues();
+                        cv.put(DBhelper.CMD_STATUS,"E");
+                        dbs.update(DBhelper.TABLE_COMANDA,cv,"STATUS='A' AND SESION='"+variables.sesion+"' AND MESA='"+variables.mesa+"'",null);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                pd.dismiss();
+                            }
+                        });
+                    }
+                }).start();
+
+
                 Intent intent = new Intent(getApplicationContext(), tables.class);
                 startActivity(intent);
-                Toast.makeText(getApplicationContext(),"Enviado a Producción",Toast.LENGTH_SHORT).show();
 
+
+               }else{Toast.makeText(platillos.this,"Comanda Vacia",Toast.LENGTH_SHORT).show();}
             }
         });
+
+        new platillos.enviadatos().execute();
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
     }
 
 
@@ -249,7 +297,7 @@ public class platillos extends AppCompatActivity {
 
 
 
-        String query = "SELECT PM_PRODUCTO,PM_PRODUCTO_DESC,PM_MODI,PM_GUAR FROM " + DBhelper.TABLE_PVMENUS + " WHERE PM_MOVI='" + movi + "' AND PM_FASE='" + fase + "' AND PM_CAT1='" + cat1 + "' AND PM_CAT2='"+cat2+"' ";
+        String query = "SELECT PM_PRODUCTO,PM_PRODUCTO_DESC,PM_MODI,PM_GUAR,PM_PRECIO,PM_CARTA FROM " + DBhelper.TABLE_PVMENUS + " WHERE PM_MOVI='" + movi + "' AND PM_FASE='" + fase + "' AND PM_CAT1='" + cat1 + "' AND PM_CAT2='"+cat2+"' ";
 
         Cursor rs = dbs.rawQuery(query, null);
         if (rs.moveToFirst()) {
@@ -270,6 +318,8 @@ public class platillos extends AppCompatActivity {
                 data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_PRODUCTO_DESC)));
                 data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_MODI)));
                 data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_GUAR)));
+                data.add(String.valueOf(rs.getInt(rs.getColumnIndex(DBhelper.KEY_PM_PRECIO))));
+                data.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_PM_CARTA)));
                 btn.setTag(data);
                 contenedor.addView(btn);
                 btn.setOnClickListener(new View.OnClickListener() {
@@ -280,11 +330,13 @@ public class platillos extends AppCompatActivity {
                     String dato2 = ((List<String>)v.getTag()).get(1).toString();
                     String dato3 = ((List<String>)v.getTag()).get(2).toString();
                     String dato4 = ((List<String>)v.getTag()).get(3).toString();
+                    float dato5 = Float.parseFloat(((List<String>)v.getTag()).get(4).toString());
+                    String dato6 = ((List<String>)v.getTag()).get(5).toString();
 
                     if (variables.modipv.equalsIgnoreCase("S")) {
-                        popup_window(dato1, dato2,dato3,dato4);
+                        popup_window(dato1, dato2,dato3,dato4,dato5,dato6);
                     }else{
-                        inserta_producto(dato1,dato2,1,1);
+                        inserta_producto(dato1,dato2,1,1,dato5,dato6);
                         muestra_cmdtmp();
                    }
                 }
@@ -303,7 +355,7 @@ public class platillos extends AppCompatActivity {
         }
     }
 
-    private void popup_comanda() {
+/*    private void popup_comanda() {
          final PopupWindow pwindo;
         String query = "SELECT ID,PRDESC,CANTIDAD,COMENSAL,TIEMPO,NOTA FROM " + DBhelper.TABLE_COMANDA + " WHERE MESA='" + variables.mesa + "'  AND STATUS='A' AND SESION='"+variables.sesion+"'";
         Cursor rs = dbs.rawQuery(query, null);
@@ -351,8 +403,8 @@ public class platillos extends AppCompatActivity {
 
 
 
-    }
-    private void popup_window( final String dato1,final String dato2, final String modi, final String guar) {
+    }*/
+    private void popup_window( final String dato1,final String dato2, final String modi, final String guar, final float precio,final String carta) {
 
         final PopupWindow pwindo;
 
@@ -462,12 +514,12 @@ public class platillos extends AppCompatActivity {
                  variables.comensal = Integer.parseInt(txtcomensal.getText().toString());
                  variables.tiempo = Integer.parseInt(txttiempo.getText().toString());
                 if (modi.equalsIgnoreCase("N")&&guar.equalsIgnoreCase("N")) {
-                    inserta_producto(dato1, dato2, variables.comensal, variables.tiempo);
+                    inserta_producto(dato1, dato2, variables.comensal, variables.tiempo,precio,carta);
                     muestra_cmdtmp();
                     pwindo.dismiss();
                 }else{
 
-                    modificadores(dato1,dato2,modi,layout,pwindo,guar);
+                    modificadores(dato1,dato2,modi,layout,pwindo,guar,precio,carta);
                 }
 
 
@@ -479,7 +531,7 @@ public class platillos extends AppCompatActivity {
         }
 
 
-    private void inserta_producto(String prid,String prdesc, int comensal,int tiempo){
+    private void inserta_producto(String prid,String prdesc, int comensal,int tiempo, float precio, String carta){
 
         ContentValues cv = new ContentValues();
         cv.put(DBhelper.CMD_SESION, variables.sesion);
@@ -488,6 +540,8 @@ public class platillos extends AppCompatActivity {
         cv.put(DBhelper.CMD_PRID, prid);
         cv.put(DBhelper.CMD_PRDESC, prdesc);
         cv.put(DBhelper.CMD_CANTIDAD, 1);
+        cv.put(DBhelper.CMD_PRECIO, precio);
+        cv.put(DBhelper.CMD_CARTA, carta);
         cv.put(DBhelper.CMD_COMENSAL, comensal);
         cv.put(DBhelper.CMD_TIEMPO, tiempo);
         cv.put(DBhelper.CMD_STATUS, "A");
@@ -584,10 +638,12 @@ public class platillos extends AppCompatActivity {
     }
 
     private void muestra_cmdtmp(){
+        txtcomentario.setText("");
+        btncoment.setTag(null);
 
-        String query = "SELECT ID,PRDESC,CANTIDAD,COMENSAL,TIEMPO,NOTA FROM " + DBhelper.TABLE_COMANDA + " WHERE MESA='" + variables.mesa + "'  AND STATUS='A' AND SESION='"+variables.sesion+"'";
+        String query = "SELECT ID,PRDESC,CANTIDAD,COMENSAL,TIEMPO,NOTA,PRECIO FROM " + DBhelper.TABLE_COMANDA + " WHERE MESA='" + variables.mesa + "'  AND STATUS='A' AND SESION='"+variables.sesion+"'";
         Cursor rs = dbs.rawQuery(query, null);
-        ArrayList<datoscomanda> datos = new ArrayList<>();
+        final ArrayList<datoscomanda> datos = new ArrayList<>();
 
         if (rs.moveToFirst()) {
             do {
@@ -599,7 +655,8 @@ public class platillos extends AppCompatActivity {
                             rs.getInt(rs.getColumnIndex(DBhelper.CMD_COMENSAL)),
                             rs.getInt(rs.getColumnIndex(DBhelper.CMD_TIEMPO)),
                             rs.getInt(rs.getColumnIndex(DBhelper.KEY_ID)),
-                            rs.getString(rs.getColumnIndex(DBhelper.CMD_NOTA))
+                            rs.getString(rs.getColumnIndex(DBhelper.CMD_NOTA)),
+                            rs.getFloat(rs.getColumnIndex(DBhelper.CMD_PRECIO))
                     ));
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -612,21 +669,41 @@ public class platillos extends AppCompatActivity {
             View layout = inflat.inflate(R.layout.activity_platillos,
                     (ViewGroup) findViewById(R.id.laycmdread));*/
 
-            ListView laycmdread = (ListView) findViewById(R.id.listcmdread);
-            listrestadp adapter = new listrestadp(platillos.this,datos);
+            laycmdread = (ListView) findViewById(R.id.listcmdread);
+            adapter = new listrestadp(platillos.this,datos);
             laycmdread.setAdapter(adapter);
+            laycmdread.setLongClickable(true);
+            laycmdread.requestFocus();
+
+            laycmdread.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    txtcomentario.setFocusable(true);
+                    btncoment.setTag(datos.get(position));
+                    if (datos.get(position).nota!=null){
+                        txtcomentario.setText(datos.get(position).nota.toString() + ",");
+                    }
+
+                    txtcomentario.setSelection(txtcomentario.getText().length());
+                    txtcomentario.requestFocus();
+                    showSoftKeyboard();
+
+                    return false;
+                }
+            });
 
         }
-        else {
+        /*else {
             ListView laycmdread = (ListView) findViewById(R.id.listcmdread);
             lcomandar_adapter adapter = new lcomandar_adapter(platillos.this,datos);
             laycmdread.setAdapter(adapter);
 
-        }
+        }*/
 
     }
 
-    private void modificadores(final String pr,final String dato2,final String modi, final View layout, final PopupWindow pwindo, final String guar) {
+    private void modificadores(final String pr,final String dato2,final String modi, final View layout, final PopupWindow pwindo, final String guar, final float precio,final String carta) {
 
 
 
@@ -661,7 +738,7 @@ public class platillos extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 pwindo.dismiss();
-                popup_window(pr,dato2,modi,guar);
+                popup_window(pr,dato2,modi,guar,precio,carta);
 
 
             }
@@ -728,7 +805,7 @@ public class platillos extends AppCompatActivity {
         btncont.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                inserta_producto(pr, dato2, variables.comensal, variables.tiempo);
+                inserta_producto(pr, dato2, variables.comensal, variables.tiempo,precio,carta);
                 inserta_modificadores(pr);
                 muestra_cmdtmp();
                 pwindo.dismiss();
@@ -922,6 +999,52 @@ public class platillos extends AppCompatActivity {
 
         }
 
+    }
+
+    /**
+     * Shows the soft keyboard
+     */
+    public void showSoftKeyboard() {
+        InputMethodManager imm = (InputMethodManager)
+            getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(txtcomentario,
+                InputMethodManager.SHOW_IMPLICIT);
+    }
+
+
+
+    public class enviadatos extends AsyncTask<String,String,String> {
+
+        final ProgressDialog progressDialog = new ProgressDialog(platillos.this,R.style.AppTheme_Dark_Dialog);
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.setMessage("Trabajando...");
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(String resp) {
+
+            super.onPostExecute(resp);
+            progressDialog.dismiss();
+
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String resp="ok";
+            muestra_cmdtmp();
+            scrollcat1();
+
+            return resp;
+        }
     }
 
 }

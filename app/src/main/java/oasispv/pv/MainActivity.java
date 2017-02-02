@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity{
         btnini= (Button) findViewById(R.id.btnini);
         txtuser= (TextView) findViewById(R.id.usrtxt);
         txtpwd= (TextView) findViewById(R.id.pwdtxt);
+        final TextView txtturno= (TextView) findViewById(R.id.txtturno);
 
 
         btnini.setOnClickListener(new View.OnClickListener() {
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity{
                 if (loging==1) {
                     //db = new ConnectOra(variables.ip, variables.cn, variables.un, variables.pw);
                     variables.mesero = txtuser.getText().toString().trim();
+                    variables.turno = Integer.parseInt(txtturno.getText().toString());
 
                     //dbhelper = new DBhelper(getApplicationContext());
                     //SLiteDatabase dbs = dbhelper.getWritableDatabase();
@@ -91,6 +93,39 @@ public class MainActivity extends AppCompatActivity{
                     startActivity(intent);
                 }else{
                     Toast.makeText(getApplicationContext(),"Hay problemas con el usuario, favor verificar Usuario y Contraseña",Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
+
+        //// Datos Turno
+
+        txtturno.setText("1");
+        Button btnmenost = (Button) findViewById(R.id.btnmenostu);
+        btnmenost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int turno = Integer.parseInt(txtturno.getText().toString());
+                if(turno==1) {
+                    txtturno.setText("1");
+                }else{
+                    turno=turno-1;
+                    txtturno.setText(Integer.toString(turno));
+                }
+
+            }
+        });
+
+        Button  btnmast= (Button) findViewById(R.id.btnmastu);
+        btnmast.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int turno = Integer.parseInt(txtturno.getText().toString());
+                if(turno==3) {
+                    txtturno.setText("3");
+                }else{
+                    turno=turno+1;
+                    txtturno.setText(Integer.toString(turno));
                 }
 
             }
@@ -123,6 +158,7 @@ public class MainActivity extends AppCompatActivity{
             super.onPreExecute();
 
             progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
             progressDialog.setMessage("Verificando datos...");
             progressDialog.show();
         }
@@ -166,10 +202,14 @@ public class MainActivity extends AppCompatActivity{
         dbs.delete(DBhelper.TABLE_PVCAT2, null, null);
         dbs.delete(DBhelper.TABLE_PVMENUS, null, null);
         dbs.delete(DBhelper.TABLE_PVMODOS, null, null);
+        dbs.delete(DBhelper.TABLE_COMANDAENC, null, null);
+        dbs.delete(DBhelper.TABLE_COMANDA, null, null);
         dbs.delete(DBhelper.TABLE_PVPRODUCTOSMODI, null, null);
         dbs.delete(DBhelper.TABLE_PVPRODUCTOSMODOSG, null, null);
         dbs.delete(DBhelper.TABLE_PRMOD, null, null);
         dbs.delete(DBhelper.TABLE_PVMODOSG, null, null);
+        dbs.delete(DBhelper.TABLE_PVRVANOMBRE, null, null);
+        dbs.delete(DBhelper.TABLE_BRAZA, null, null);
 
         String querycat1 = "select CAT1_MOVI, CAT1_FASE, CAT1_CARTA, CAT1, CAT1_IMAGEN, CAT1_DESC, CAT1_POS" +
                 " FROM PVCAT1 where CAT1_MOVI='" + movi + "' and CAT1_FASE='" + fase + "' ";
@@ -193,14 +233,16 @@ public class MainActivity extends AppCompatActivity{
         String queryPVMODOSGPR = " SELECT GP_PRODUCTO, GP_GRUPO,MG_DESC " +
                 "FROM PVPRODUCTOSMODOSG,PVMODOSG WHERE MG_GRUPO=GP_GRUPO";
 
-        String queryRVANMES = "SELECT RV_RESERVA,RV_HABI,NOMBRE " +
-                "FROM PVRVANOMBRE";
+        String queryRVANMES = "SELECT RV_RESERVA,RV_HABI,NOMBRE,VN_SECUENCIA " +
+                "FROM PVRVANOMBRE WHERE VN_SECUENCIA=1";
 
         String queryBRAZA = " SELECT BU_RESERVA,BU_FOLIO " +
-                "FROM PVPRODUCTOSMODOSG";
+                "FROM PVFRONT.FRBRAZALUSO";
 
 
-        String querypvmenus = " SELECT PM_MOVI, PM_FASE, PM_CAT1, PM_CAT2, PM_PRODUCTO,PR_DESC, PM_POS, PM_PRECIO, PM_CARTA, PM_COMISION, PM_PROPINA, PM_FAMILIA, PM_GRUPOPR, PM_SUBFAMILIAPR" +
+        String querypvmenus = " SELECT PM_MOVI, PM_FASE, PM_CAT1, PM_CAT2, PM_PRODUCTO,PR_DESC, PM_POS," +
+                " CASE WHEN (NVL(PM_PRECIO,0)<>0) THEN PM_PRECIO ELSE NVL(PR_PRECIO,0) END PM_PRECIO," +
+                " PM_CARTA, PM_COMISION, PM_PROPINA, PM_FAMILIA, PM_GRUPOPR, PM_SUBFAMILIAPR" +
                 " FROM PVMENUS,PVPRODUCTOS WHERE PM_MOVI='" + movi + "' AND PM_FASE='" + fase + "' AND PR_PRODUCTO=PM_PRODUCTO AND PR_ACTIVO='S'";
 
 
@@ -217,7 +259,7 @@ public class MainActivity extends AppCompatActivity{
             }
 
         } catch (SQLException e) {
-            res = "error pvcat1 " + e;
+            res = "error PVPRODUCTOSMODOSG " + e;
         }
         //////INSERTA PVRCANOMBRE
         try {
@@ -228,11 +270,12 @@ public class MainActivity extends AppCompatActivity{
                 cv.put(DBhelper.PN_RESERVA, rs.getString("RV_RESERVA"));
                 cv.put(DBhelper.PN_HABI, rs.getString("RV_HABI"));
                 cv.put(DBhelper.PN_NOMBRE, rs.getString("NOMBRE"));
-                dbs.insert(DBhelper.TABLE_PVMODOSG, null, cv);
+                cv.put(DBhelper.PN_SEC, rs.getInt("VN_SECUENCIA"));
+                dbs.insert(DBhelper.TABLE_PVRVANOMBRE, null, cv);
             }
 
         } catch (SQLException e) {
-            res = "error pvcat1 " + e;
+            res = "error PVRCANOMBRE " + e;
         }
         //////INSERTA BRAZALETE
         try {
@@ -243,11 +286,11 @@ public class MainActivity extends AppCompatActivity{
                 cv.put(DBhelper.BU_RESERVA, rs.getString("BU_RESERVA"));
                 cv.put(DBhelper.BU_FOLIO, rs.getString("BU_FOLIO"));
 
-                dbs.insert(DBhelper.TABLE_PVMODOSG, null, cv);
+                dbs.insert(DBhelper.TABLE_BRAZA, null, cv);
             }
 
         } catch (SQLException e) {
-            res = "error pvcat1 " + e;
+            res = "error BRAZALETE " + e;
         }
         //////INSERTA PVMODOSG
         try {
@@ -262,7 +305,7 @@ public class MainActivity extends AppCompatActivity{
             }
 
         } catch (SQLException e) {
-            res = "error pvcat1 " + e;
+            res = "error PVMODOSG " + e;
         }
         //////INSERTA PRMOD
         try {
@@ -276,7 +319,7 @@ public class MainActivity extends AppCompatActivity{
             }
 
         } catch (SQLException e) {
-            res = "error pvcat1 " + e;
+            res = "error PRMOD " + e;
         }
         //////INSERTA PVMODOS
         try {
@@ -292,7 +335,7 @@ public class MainActivity extends AppCompatActivity{
             }
 
         } catch (SQLException e) {
-            res = "error pvcat1 " + e;
+            res = "error PVMODOS " + e;
         }
         //////INSERTA PVPRODUCTOSMODI
         try {
@@ -307,7 +350,7 @@ public class MainActivity extends AppCompatActivity{
             }
 
         } catch (SQLException e) {
-            res = "error pvcat1 " + e;
+            res = "error PVPRODUCTOSMODI " + e;
         }
         //////INSERTA PVCAT1
         try {
@@ -348,7 +391,7 @@ public class MainActivity extends AppCompatActivity{
             }
 
         } catch (SQLException e) {
-            res = "error pvcat1 " + e;
+            res = "error PVCAT2 " + e;
         }
         try {
 
@@ -362,7 +405,7 @@ public class MainActivity extends AppCompatActivity{
                 cv.put(DBhelper.KEY_PM_PRODUCTO, rs.getString("PM_PRODUCTO"));
                 cv.put(DBhelper.KEY_PM_PRODUCTO_DESC, rs.getString("PR_DESC"));
                 cv.put(DBhelper.KEY_PM_POS, rs.getInt("PM_POS"));
-                cv.put(DBhelper.KEY_PM_PRECIO, rs.getInt("PM_PRECIO"));
+                cv.put(DBhelper.KEY_PM_PRECIO, rs.getFloat("PM_PRECIO"));
                 cv.put(DBhelper.KEY_PM_CARTA, rs.getString("PM_CARTA"));
                 cv.put(DBhelper.KEY_PM_COMISION, rs.getInt("PM_COMISION"));
                 cv.put(DBhelper.KEY_PM_PROPINA, rs.getInt("PM_PROPINA"));
@@ -421,12 +464,13 @@ public class MainActivity extends AppCompatActivity{
                     conexion = db.getConexion();
 
 
+
                     try {
                         stmt = conexion.createStatement();
-                       /* String selectpv = "select PT_NOMBRE, PT_PV, PT_FASE, PT_UN, PT_CN, PT_PW, PT_IP_PV" +
-                                " FROM PVXTABLET where PT_MAC='" + mac + "'";*/
                         String selectpv = "select PT_NOMBRE, PT_PV, PT_FASE, PT_UN, PT_CN, PT_PW, PT_IP_PV,PT_MODI" +
-                                " FROM PVXTABLET where PT_MAC='EMULADOR'";
+                                " FROM PVXTABLET where PT_MAC='" + mac + "'";
+                       /* String selectpv = "select PT_NOMBRE, PT_PV, PT_FASE, PT_UN, PT_CN, PT_PW, PT_IP_PV,PT_MODI" +
+                                " FROM PVXTABLET where PT_MAC='EMULADOR'";*/
 
                         ResultSet rs = stmt.executeQuery(selectpv);
                         while (rs.next()) {

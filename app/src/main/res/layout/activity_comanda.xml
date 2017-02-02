@@ -87,7 +87,8 @@
             android:id="@+id/textView6"
             android:fontFamily="monospace"
             android:textSize="18sp"
-            tools:ignore="HardcodedText,UnusedAttribute" />
+            tools:ignore="HardcodedText,UnusedAttribute"
+            android:layout_marginLeft="50dp" />
 
         <TextView
             android:text="TIEMPO"
@@ -97,21 +98,54 @@
             android:fontFamily="monospace"
             android:textSize="18sp"
             tools:ignore="HardcodedText,UnusedAttribute" />
+
+        <TextView
+            android:text="PRECIO"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView4"
+            android:fontFamily="monospace"
+            android:textSize="18sp" />
     </LinearLayout>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="689dp"
         android:layout_marginBottom="5dp">
 
         <ListView
             android:layout_width="match_parent"
-            android:layout_height="730dp"
+            android:layout_height="663dp"
             android:id="@+id/listprd"
             android:paddingTop="10dp"
             android:paddingLeft="10dp"
             tools:ignore="RtlHardcoded,RtlSymmetry" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:text="Total:"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/textView9"
+            android:layout_weight="1"
+            android:textAlignment="textEnd"
+            android:textSize="30sp"
+            android:textStyle="normal|bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/txttprecio"
+            android:layout_weight="1"
+            android:textSize="36sp"
+            android:textAlignment="textEnd"
+            android:textStyle="normal|bold" />
     </LinearLayout>
 
 </LinearLayout>

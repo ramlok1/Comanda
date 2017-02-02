@@ -45,6 +45,7 @@ public class lcomandar_adapter extends BaseAdapter {
         TextView txtcomensal;
         TextView txtiempo;
         TextView txtnota;
+        TextView txtprecio;
 
         //http://developer.android.com/intl/es/reference/android/view/LayoutInflater.html
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -57,12 +58,16 @@ public class lcomandar_adapter extends BaseAdapter {
         txtcomensal = (TextView) itemView.findViewById(R.id.txtcomensal);
         txtiempo = (TextView) itemView.findViewById(R.id.txtiempo);
         txtnota = (TextView) itemView.findViewById(R.id.txtnota);
+        txtprecio = (TextView) itemView.findViewById(R.id.txtprecio);
 
         // Capture position and set to the TextViews
         txtprd.setText(lista.get(position).prdesc);
         txtcomensal.setText(Integer.toString(lista.get(position).comensal));
         txtiempo.setText(Integer.toString(lista.get(position).tiempo));
         txtnota.setText(lista.get(position).nota);
+        txtprecio.setText(Float.toString(lista.get(position).precio));
+        // Totaliza precios
+
 
         return itemView;
     }

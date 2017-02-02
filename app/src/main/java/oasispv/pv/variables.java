@@ -26,6 +26,14 @@ public  class variables {
     public static String mandatory;
     public static String prdesc;
     public static String mesero_mesa;
+    public static String comensal_name;
+    public static String rva;
+    public static String habi;
+    public static int mesa_pax;
+    public static int erroroc;
+    public static int turno;
+    public static float tprecio;
+
 
 
 

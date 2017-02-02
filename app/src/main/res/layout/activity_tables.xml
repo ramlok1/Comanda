@@ -20,18 +20,24 @@
         android:id="@+id/btnxsesion"
 
 
-        android:background="@android:drawable/ic_lock_power_off"
+        android:background="@drawable/logout"
         android:layout_above="@+id/btnlmaster"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         tools:ignore="RelativeOverlap" />
 
-    <LinearLayout
-        android:orientation="vertical"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar"
-        android:id="@+id/btnlmaster"></LinearLayout>
+        android:layout_below="@+id/toolbar">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/toolbar"
+            android:id="@+id/btnlmaster"></LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>

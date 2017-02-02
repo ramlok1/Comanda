@@ -38,6 +38,7 @@ public class ConnectOra {
             System.out.println("Conexion a Base de Datos " + bd + " Exitosa");
 
         } catch (Exception exc) {
+            variables.erroroc=1;
             System.out.println("Error al tratar de abrir la base de Datos "
                     + bd + " : " + exc);
         }
@@ -102,13 +103,13 @@ public class ConnectOra {
 
 
 
-        String sql = "insert into PVCHEQDIAENC (CE_MOVI,CE_FASE,CE_TRANSA,CE_MESA,CE_PAX,CE_FECHA,CE_MESERO," +
+        String sql = "insert into PVCHEQDIAENC (CE_MOVI,CE_FASE,CE_TRANSA,CE_MESA,CE_RESERVA,CE_HABI,CE_PAX,CE_FECHA,CE_MESERO," +
                 "CE_ABRE_U,CE_ABRE_F,CE_ABRE_H,CE_MACHINE,CE_TURNO)"
                 + " VALUES ('" + variables.movi + "'," + "'" + variables.fase + "'," + "'"
-                + variables.cmd + "'," + "'" + variables.mesa + "'," + "'" + 2 + "',"
-                +"to_date('" + fecha + "','DD/MM/YYYY')," + "'" + variables.mesero + "'," + "'" + variables.mesero + "',"
-                +"to_date('" + fecha + "','DD/MM/YYYY')," + "'" + Utils.Hora(new Date()).toString() + "'," + "'" + "tablet" + "',"
-                +  1 + ")";
+                + variables.cmd + "'," + "'" + Integer.parseInt(variables.mesa) + "'," + "'" + variables.rva + "',"+ "'" + variables.habi + "',"+ "'" + variables.mesa_pax + "',"
+                +"to_date('" + fecha + "','DD/MM/YY')," + "'" + variables.mesero + "'," + "'" + variables.mesero + "',"
+                +"to_date('" + fecha + "','DD/MM/YY')," + "'" + Utils.Hora(new Date()).toString() + "'," + "'" + "tablet" + "',"
+                +  variables.turno + ")";
 
         s.executeQuery(sql);
         s.close();
@@ -117,6 +118,26 @@ public class ConnectOra {
 
 
 
+
+
+    }
+    public void  cierra_comanda_enc() throws SQLException {
+       String res= calcula_comanda();
+
+            String qry_fecha = "SELECT PR_FECHA FROM PVFRONT.FRPARAM";
+
+            Statement s = conexion.createStatement();
+            ResultSet r = s.executeQuery(qry_fecha);
+            r.next();
+            String fecha = Utils.fecha(r.getDate("PR_FECHA"));
+
+
+            String sql = "UPDATE PVCHEQDIAENC SET CE_CIERRA_F=" + "to_date('" + fecha + "','DD/MM/YYYY')," +
+                    "CE_CIERRA_H='" + Utils.Hora(new Date()).toString() + "', CE_CIERRA_U='" + variables.mesero
+                    + "' WHERE CE_MOVI='" + variables.movi + "' AND CE_FASE= '" + variables.fase + "' AND CE_TRANSA= '" + variables.cmd + "' AND CE_MESA= '" + Integer.parseInt(variables.mesa)+"'";
+
+            s.executeQuery(sql);
+            s.close();
 
 
     }
@@ -132,7 +153,7 @@ public class ConnectOra {
         r.next();
         String fecha = Utils.fecha(r.getDate("PR_FECHA"));
 
-        String sql_pr="SELECT ID,PRID,CANTIDAD,TIEMPO,NOTA FROM " + DBhelper.TABLE_COMANDA + " WHERE STATUS='A' AND SESION='"+variables.sesion+"' AND MESA='"+variables.mesa+"'";
+        String sql_pr="SELECT ID,PRID,CANTIDAD,TIEMPO,NOTA,PRECIO,CARTA FROM " + DBhelper.TABLE_COMANDA + " WHERE STATUS='A' AND SESION='"+variables.sesion+"' AND MESA='"+variables.mesa+"'";
 
         Cursor rs = dbs.rawQuery(sql_pr, null);
         if (rs.getCount() > 0) {
@@ -144,9 +165,9 @@ public class ConnectOra {
                 String sql = "insert into PVCHEQDIADET (CD_MOVI, CD_FASE, CD_TRANSA, CD_ID, CD_PRODUCTO,CD_CANTIDAD, CD_PRECIO, CD_IVA, CD_IMPORTE, CD_DESCTO_IMP, CD_TOTAL, CD_TIEMPO, CD_MOD, CD_CAP_H, CD_CAP_U, CD_PROPINA_INC, CD_COMISION_INC, CD_COSTO,  CD_NOTAS,CD_CARTA)"
                         + " VALUES ('" + variables.movi + "'," + "'" + variables.fase + "'," + "'"
                         + variables.cmd + "'," + "'" + transa + "'," + "'" + rs.getString(rs.getColumnIndex(DBhelper.CMD_PRID)) + "',"
-                        + rs.getInt(rs.getColumnIndex(DBhelper.CMD_CANTIDAD)) + "," + 0 + "," + 0 + "," + 0 + "," + 0 + "," + 0 + ","
+                        + rs.getInt(rs.getColumnIndex(DBhelper.CMD_CANTIDAD)) + "," + rs.getInt(rs.getColumnIndex(DBhelper.CMD_PRECIO)) + "," + (rs.getInt(rs.getColumnIndex(DBhelper.CMD_PRECIO))/1.16)*.16 + "," + rs.getInt(rs.getColumnIndex(DBhelper.CMD_PRECIO)) + "," + 0 + "," + rs.getInt(rs.getColumnIndex(DBhelper.CMD_PRECIO)) + ","
                         + "'" + rs.getString(rs.getColumnIndex(DBhelper.CMD_TIEMPO)) + "'," + "'" + "0" + "'," + "'" + Utils.Hora(new Date()).toString() + "'," + "'" + variables.mesero + "'," + 0 + "," + 0 + "," + 0 + ","
-                        + "'" + rs.getString(rs.getColumnIndex(DBhelper.CMD_NOTA)) + "','" + "GENERAL" + "')";
+                        + "'" + rs.getString(rs.getColumnIndex(DBhelper.CMD_NOTA)) + "','" +  rs.getString(rs.getColumnIndex(DBhelper.CMD_CARTA)) + "')";
 
                 s.executeQuery(sql);
 
@@ -160,7 +181,7 @@ public class ConnectOra {
         s.close();
 
         String mac = Utils.getMACAddress("wlan0");
-        mac = mac.replace("-","");
+        mac = mac.replace(":","");
 
         CallableStatement comanda = conexion.prepareCall("begin CIELOPV.COMANDERO(?,?,?,?,?,?); end;");
         comanda.setString(1, mac); // Sesion
@@ -168,7 +189,7 @@ public class ConnectOra {
         comanda.setString(3, variables.movi); // movi
         comanda.setString(4, variables.fase); // fase
         comanda.setString(5, variables.cmd); // transa
-        comanda.setString(6,"ELO" ); // Hora
+        comanda.setString(6,"TABLET" ); // Hora
 
         comanda.execute();
 
@@ -180,6 +201,28 @@ public class ConnectOra {
 
 
 
+
+    }
+    public String  calcula_comanda() throws SQLException {
+
+
+
+        String mac = Utils.getMACAddress("wlan0");
+        mac = mac.replace(":","");
+        String res;
+        CallableStatement comanda = conexion.prepareCall("{? = call  CIELOPV.CALCULA_CHEQUE(?,?,?,?,?)}");
+        comanda.registerOutParameter(1, java.sql.Types.VARCHAR);
+        comanda.setString(2, mac); // Sesion
+        comanda.setString(3, variables.mesero); // usuario
+        comanda.setString(4, variables.movi); // movi
+        comanda.setString(5, variables.fase); // fase
+        comanda.setString(6, variables.cmd); // transa
+
+        comanda.execute();
+        //conexion.close();
+        res=comanda.getString(1);
+
+        return res;
 
     }
     public void  inserta_modificadores_oracle(DBhelper dbhelper, String prid,String transa,int id) throws SQLException {

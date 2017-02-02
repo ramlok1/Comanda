@@ -1,16 +1,23 @@
 package oasispv.pv;
 
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +53,7 @@ public class tables extends AppCompatActivity {
         dbs = dbhelper.getWritableDatabase();
         db = new ConnectOra(variables.ip,variables.cn,variables.un,variables.pw);
 
+
         super.onCreate(savedInstanceState);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                 .permitNetwork().build();
@@ -53,16 +61,45 @@ public class tables extends AppCompatActivity {
         setContentView(R.layout.activity_tables);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("");
+        toolbar.setTitle(variables.mesero);
         setSupportActionBar(toolbar);
 
+        Button btnxsesion = (Button) findViewById(R.id.btnxsesion);
+        btnxsesion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        ActionBar backbtn = getSupportActionBar();
-        backbtn.setDisplayHomeAsUpEnabled(true);
-        leersesion();
-        actualiza_mesas();
-        leermesas();
+               /* long count= DatabaseUtils.queryNumEntries(dbs,DBhelper.TABLE_COMANDAENC," CE_MESERO='"+variables.mesero+"' AND CE_STATUS!='C'");
+                if (count>0){
+                    Toast.makeText(getApplicationContext(),"Aun tiene mesas abiertas",Toast.LENGTH_LONG).show();
+                }else{*/
 
+                    final AlertDialog.Builder msgcerrar = new AlertDialog.Builder(tables.this);
+                    msgcerrar.setTitle("Confirmar cierre");
+                    msgcerrar.setMessage("Seguro desea cerrar la sesion?");
+                    msgcerrar.setCancelable(false);
+                    msgcerrar.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface msgcerrar, int id) {
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
+                        }
+                });
+                    msgcerrar.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface msgcerrar, int id) {
+                            msgcerrar.dismiss();
+                        }
+                    });
+                    msgcerrar.show();//muestra mensaje
+               // }
+
+
+
+            }
+
+        });
+
+
+        new tables.datosmesas().execute();
 
 
 
@@ -82,7 +119,7 @@ public class tables extends AppCompatActivity {
             LinearLayout contenedor = null;
 
 
-            String query = "SELECT MESA,MESA_NAME,HABI,MESA_MESERO FROM " + DBhelper.TABLE_PVMESA ;
+            String query = "SELECT MESA,MESA_NAME,HABI,MESA_MESERO FROM " + DBhelper.TABLE_PVMESA+" ORDER BY MESA" ;
 
             Cursor rs = dbs.rawQuery(query, null);
             if (rs.getCount() > 0) {
@@ -98,7 +135,7 @@ public class tables extends AppCompatActivity {
                     }
                     ArrayList<String> datos = new ArrayList<>();
                     Button btn = new Button(this);
-                    btn.setLayoutParams(new LinearLayout.LayoutParams(120, LinearLayout.LayoutParams.MATCH_PARENT));
+                    btn.setLayoutParams(new LinearLayout.LayoutParams(120, LinearLayout.LayoutParams.MATCH_PARENT,1.0f));
 
 
 
@@ -129,33 +166,24 @@ public class tables extends AppCompatActivity {
                     btn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                      
 
 
-                            Intent intent = new Intent(getApplicationContext(), platillos.class);
                             Intent intentcomanda = new Intent(getApplicationContext(), comanda.class);
                             Button b = (Button)v;
-
-
                             variables.mesa=((List<String>)v.getTag()).get(0).toString();
-
                             variables.mesero_mesa = ((List<String>) v.getTag()).get(1).toString();
 
-
-
-
-
                             if(variables.mesero_mesa.equalsIgnoreCase("N")) {
-
                                 popup_window();
                             }else {
                                 variables.cmd=busca_comanda(variables.mesa);
                                 startActivity(intentcomanda);
                             }
-
                         }
                     });
                     contl = contl + 1;
-                    if (contl == 6) {
+                    if (contl == 8) {
                         contl = 1;
                         ban = false;
                     }
@@ -200,11 +228,11 @@ public class tables extends AppCompatActivity {
         //borrar datos existentes
         dbs.delete(DBhelper.TABLE_PVMESA, null, null);
 
-        String query_mesas = "SELECT PM_MESA,PM_NOMBRE FROM PVMESAS WHERE PM_MOVI='"+variables.movi+"' AND PM_FASE='"+variables.fase+"' AND PM_AREA IS NOT NULL";
+        String query_mesas = "SELECT PM_MESA,PM_NOMBRE FROM PVMESAS WHERE PM_MOVI='"+variables.movi+"' AND PM_FASE='"+variables.fase+"'";
 
-        String query = "select CE_TRANSA,CE_MESA,PM_NOMBRE,CE_MESERO, CE_HABI, CE_PAX " +
-                "                 FROM PVCHEQDIAENC,PVMESAS where CE_MOVI='"+variables.movi+"' and CE_FASE='"+variables.fase+"' and CE_CIERRA_F IS NULL" +
-                "                 and CE_CAN_F IS NULL and CE_MESA IS NOT NULL AND PM_MOVI=CE_MOVI AND PM_FASE=CE_FASE AND PM_MESA=CE_MESA";
+        String query = "select CE_TRANSA,LPAD(CE_MESA,2,'0') CE_MESA,CE_MESERO, CE_HABI, CE_PAX " +
+                "                 FROM PVCHEQDIAENC where CE_MOVI='"+variables.movi+"' and CE_FASE='"+variables.fase+"' and CE_CIERRA_F IS NULL" +
+                "                 and CE_CAN_F IS NULL and CE_MESA IS NOT NULL ";
 
         //////INSERTA PVMESA
         try {
@@ -232,7 +260,6 @@ public class tables extends AppCompatActivity {
                 ContentValues cv = new ContentValues();
                 cv.put(DBhelper.KEY_MESA_MESERO, rs.getString("CE_MESERO"));
                 cv.put(DBhelper.KEY_HABI, rs.getString("CE_HABI"));
-                cv.put(DBhelper.KEY_GUEST, "Conrado Gonzalez");
                 cv.put(DBhelper.KEY_PAX, rs.getInt("CE_PAX"));
                 dbs.update(DBhelper.TABLE_PVMESA,cv,"MESA='"+rs.getString("CE_MESA")+"'",null);
 
@@ -334,6 +361,7 @@ public class tables extends AppCompatActivity {
     private void popup_window( ) {
 
         Button btnClosePopup,btnacep;
+        final EditText txthabi,txtbraza,txtrva,txtpax,txtname;
         final PopupWindow pwindo;
 
 
@@ -348,30 +376,88 @@ public class tables extends AppCompatActivity {
 
 
 
-        pwindo = new PopupWindow(layout, 590,500, true);
-        pwindo.showAtLocation(layout, Gravity.CENTER, 0, -20);
+        pwindo = new PopupWindow(layout, ViewGroup.LayoutParams.MATCH_PARENT,600, true);
+        pwindo.showAtLocation(layout, Gravity.CENTER, 0, -100);
+        txtbraza = (EditText) layout.findViewById(R.id.txtbraza);
+        txthabi = (EditText) layout.findViewById(R.id.txthabi);
+        txtrva = (EditText) layout.findViewById(R.id.txtrva);
+        txtpax = (EditText) layout.findViewById(R.id.txtpax);
+        txtname = (EditText) layout.findViewById(R.id.txtname);
+        txtbraza.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus==false&&txtbraza.getText().toString().trim().length()>0){
+                    ArrayList<String> h_dato;
+                   h_dato= busca_datos_huesped(txtbraza.getText().toString(),"B");
+                    if (h_dato.isEmpty() ){
+                        Toast.makeText(tables.this,"No se encontro información",Toast.LENGTH_SHORT).show();
+
+                    }else {
+                        txthabi.setText(h_dato.get(1).toString());
+                        txtrva.setText(h_dato.get(0).toString());
+                        txtname.setText(h_dato.get(2).toString());
+                    }
+                }
+            }
+        });
+        txthabi.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus==false&&txthabi.getText().toString().trim().length()>0){
+                    ArrayList<String> h_dato;
+                    h_dato= busca_datos_huesped(txthabi.getText().toString(),"H");
+                if (h_dato.isEmpty() ){
+                    Toast.makeText(tables.this,"No se encontro información",Toast.LENGTH_SHORT).show();
+
+                }else {
+                    txtrva.setText(h_dato.get(0).toString());
+                    txtname.setText(h_dato.get(2).toString());
+                        }
+                }
+            }
+        });
 
         btnClosePopup = (Button) layout.findViewById(R.id.btnclosepwmesa);
         btnacep = (Button) layout.findViewById(R.id.btnabrir);
         btnacep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String transa="";
+                String transa = "";
+                txtpax.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
-                try {
+                if (txtname.getText().toString().trim().length()>0) {
 
-                    transa=db.genera_transa();
-                    genera_comanda(variables.mesero,variables.mesa,transa);
-                    variables.cmd = busca_comanda(variables.mesa);
-                    db.inserta_comanda_enc();
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                    if(txtpax.getText().toString().trim().length()>0){
+                        ////datos Comensal
+                        variables.comensal_name=txtname.getText().toString();
+                        variables.rva=txtrva.getText().toString();
+                        variables.habi=txthabi.getText().toString();
+                        variables.mesa_pax=Integer.parseInt(txtpax.getText().toString());
+                        ////Abre comanda
+                        try {
+
+                                transa = db.genera_transa();
+                                genera_comanda(variables.mesero, variables.mesa, transa);
+                                variables.cmd = busca_comanda(variables.mesa);
+                                db.inserta_comanda_enc();
+                            } catch (SQLException e) {
+                                    e.printStackTrace();
+                            }
+                ////Abre platillos
+                    Intent intent = new Intent(getApplicationContext(), platillos.class);
+                    startActivity(intent);
+
+
+
+                    }else {
+                        Toast.makeText(getApplicationContext(),"PAX vacio",Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(),"Nombre vacio",Toast.LENGTH_SHORT).show();
                 }
-
-                Intent intent = new Intent(getApplicationContext(), platillos.class);
-                startActivity(intent);
             }
         });
+
         btnClosePopup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -384,6 +470,78 @@ public class tables extends AppCompatActivity {
 
 
 
+    }
+    private ArrayList<String> busca_datos_huesped(String dato,String tipo){
+
+        dbs = dbhelper.getWritableDatabase();
+        ArrayList<String> h_dato = new ArrayList<>();
+        String consulta="N";
+
+        switch (tipo){
+            case "B": consulta="SELECT PN_RESERVA,PN_HABI,PN_NOMBRE FROM " + DBhelper.TABLE_BRAZA + ","+DBhelper.TABLE_PVRVANOMBRE+" WHERE BU_FOLIO='" + dato + "' AND PN_RESERVA=BU_RESERVA AND PN_SEC=1";
+                break;
+            case "H": consulta="SELECT PN_RESERVA,PN_HABI,PN_NOMBRE FROM "+DBhelper.TABLE_PVRVANOMBRE+" WHERE PN_HABI='"+dato+"' AND PN_SEC=1";
+                break;
+            default: consulta="";
+        }
+
+
+
+        if( consulta.equalsIgnoreCase("N")){
+            Toast.makeText(getApplicationContext(),"Error en busqueda de informacion",Toast.LENGTH_SHORT);
+
+        }else{
+            String query = consulta;
+
+            Cursor rs = dbs.rawQuery(query, null);
+            if (rs.moveToFirst()) {
+                do {
+                    h_dato.add(rs.getString(rs.getColumnIndex(DBhelper.PN_RESERVA)));
+                    h_dato.add(rs.getString(rs.getColumnIndex(DBhelper.PN_HABI)));
+                    h_dato.add(rs.getString(rs.getColumnIndex(DBhelper.PN_NOMBRE)));
+                } while (rs.moveToNext());
+
+            }
+        }
+
+        return h_dato;
+
+    }
+
+    public class datosmesas extends AsyncTask<String,String,String> {
+
+        final ProgressDialog progressDialog = new ProgressDialog(tables.this,R.style.AppTheme_Dark_Dialog);
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.setMessage("Trabajando...");
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(String resp) {
+
+            super.onPostExecute(resp);
+            progressDialog.dismiss();
+            leermesas();
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String resp="ok";
+            leersesion();
+            actualiza_mesas();
+
+
+
+            return resp;
+        }
     }
 
 

@@ -39,11 +39,11 @@ public class listrestadp extends BaseAdapter {
         return position;
     }
 
+
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         // Declare Variables
         TextView txtprd;
-
         TextView txtcomensal;
         TextView txtiempo;
         TextView txtnota;
