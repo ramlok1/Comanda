@@ -15,12 +15,13 @@
 
     <ImageView
         android:layout_width="match_parent"
-        app:srcCompat="@drawable/sarap"
+        app:srcCompat="@drawable/casini"
         android:id="@+id/imageView"
         android:contentDescription="Logo"
         tools:ignore="HardcodedText"
         android:layout_height="219dp"
-        android:layout_weight="0.30" />
+        android:layout_weight="0.30"
+        android:scaleType="centerCrop" />
 
 
 

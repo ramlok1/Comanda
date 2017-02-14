@@ -141,6 +141,17 @@ public class ConnectOra {
 
 
     }
+    public void  cambio_mesa(String mesa) throws SQLException {
+
+        Statement s = conexion.createStatement();
+        String sql = "UPDATE PVCHEQDIAENC SET CE_MESA='"+Integer.parseInt(mesa)
+                +"' WHERE CE_MOVI='" + variables.movi + "' AND CE_FASE= '" + variables.fase + "' AND CE_TRANSA= '" + variables.cmd + "' AND CE_MESA= '" + Integer.parseInt(variables.mesa)+"'";
+
+        s.executeQuery(sql);
+        s.close();
+
+
+    }
     public void  inserta_comanda_det(DBhelper dbhelper) throws SQLException {
 
         SQLiteDatabase dbs = dbhelper.getWritableDatabase();
@@ -153,7 +164,7 @@ public class ConnectOra {
         r.next();
         String fecha = Utils.fecha(r.getDate("PR_FECHA"));
 
-        String sql_pr="SELECT ID,PRID,CANTIDAD,TIEMPO,NOTA,PRECIO,CARTA FROM " + DBhelper.TABLE_COMANDA + " WHERE STATUS='A' AND SESION='"+variables.sesion+"' AND MESA='"+variables.mesa+"'";
+        String sql_pr="SELECT ID,PRID,CANTIDAD,TIEMPO,NOTA,PRECIO,CARTA,COMENSAL FROM " + DBhelper.TABLE_COMANDA + " WHERE STATUS='A' AND SESION='"+variables.sesion+"' AND MESA='"+variables.mesa+"'";
 
         Cursor rs = dbs.rawQuery(sql_pr, null);
         if (rs.getCount() > 0) {
@@ -162,12 +173,12 @@ public class ConnectOra {
                 String transa = genera_transa_det();
 
 
-                String sql = "insert into PVCHEQDIADET (CD_MOVI, CD_FASE, CD_TRANSA, CD_ID, CD_PRODUCTO,CD_CANTIDAD, CD_PRECIO, CD_IVA, CD_IMPORTE, CD_DESCTO_IMP, CD_TOTAL, CD_TIEMPO, CD_MOD, CD_CAP_H, CD_CAP_U, CD_PROPINA_INC, CD_COMISION_INC, CD_COSTO,  CD_NOTAS,CD_CARTA)"
+                String sql = "insert into PVCHEQDIADET (CD_MOVI, CD_FASE, CD_TRANSA, CD_ID, CD_PRODUCTO,CD_CANTIDAD, CD_PRECIO, CD_IVA, CD_IMPORTE, CD_DESCTO_IMP, CD_TOTAL, CD_TIEMPO, CD_MOD, CD_CAP_H, CD_CAP_U, CD_PROPINA_INC, CD_COMISION_INC, CD_COSTO,  CD_NOTAS,CD_CARTA,CD_RECETA)"
                         + " VALUES ('" + variables.movi + "'," + "'" + variables.fase + "'," + "'"
                         + variables.cmd + "'," + "'" + transa + "'," + "'" + rs.getString(rs.getColumnIndex(DBhelper.CMD_PRID)) + "',"
                         + rs.getInt(rs.getColumnIndex(DBhelper.CMD_CANTIDAD)) + "," + rs.getInt(rs.getColumnIndex(DBhelper.CMD_PRECIO)) + "," + (rs.getInt(rs.getColumnIndex(DBhelper.CMD_PRECIO))/1.16)*.16 + "," + rs.getInt(rs.getColumnIndex(DBhelper.CMD_PRECIO)) + "," + 0 + "," + rs.getInt(rs.getColumnIndex(DBhelper.CMD_PRECIO)) + ","
                         + "'" + rs.getString(rs.getColumnIndex(DBhelper.CMD_TIEMPO)) + "'," + "'" + "0" + "'," + "'" + Utils.Hora(new Date()).toString() + "'," + "'" + variables.mesero + "'," + 0 + "," + 0 + "," + 0 + ","
-                        + "'" + rs.getString(rs.getColumnIndex(DBhelper.CMD_NOTA)) + "','" +  rs.getString(rs.getColumnIndex(DBhelper.CMD_CARTA)) + "')";
+                        + "'" + rs.getString(rs.getColumnIndex(DBhelper.CMD_NOTA)) + "','" +  rs.getString(rs.getColumnIndex(DBhelper.CMD_CARTA)) + "','"+rs.getInt(rs.getColumnIndex(DBhelper.CMD_COMENSAL))+"')";
 
                 s.executeQuery(sql);
 

@@ -13,19 +13,27 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class comanda extends AppCompatActivity {
     Button addpr,closecmd;
@@ -135,7 +143,87 @@ public class comanda extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater men= getMenuInflater();
+        men.inflate(R.menu.mecambio,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        final Spinner input = new Spinner(this);
+        switch (item.getItemId()) {
+            case R.id.cam_mesa:
+
+                // Sacar mesas disponibles
+                String query = "SELECT MESA,MESA_NAME FROM PVMESA WHERE MESA NOT IN (SELECT CE_MESA FROM COMANDAENC WHERE CE_STATUS='A') ORDER BY MESA_NAME";
+                Cursor rs = dbs.rawQuery(query, null);
+                ArrayList<String> nmesa = new ArrayList<>();
+                ArrayList<String> nom_mesa = new ArrayList<>();
+                        if (rs.moveToFirst()) {
+                            do {
+                                try {
+                                    nmesa.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA)));
+                                    nom_mesa.add(rs.getString(rs.getColumnIndex(DBhelper.KEY_MESA_NAME)));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            } while (rs.moveToNext());
+                        }
+                ///////////////////////////////////////////////////////
+                // Prepara info para spinner
+                String[] spinnerArray = new String[nmesa.size()];
+                final HashMap<Integer,String> spinnerMap = new HashMap<Integer, String>();
+                for (int i = 0; i < nmesa.size(); i++)
+                {
+                    spinnerMap.put(i,nmesa.get(i));
+                    spinnerArray[i] = nom_mesa.get(i);
+                }
+                /// Llena spinner
+                ArrayAdapter<String> adapter =new ArrayAdapter<>(getApplicationContext(),R.layout.spinneritem , spinnerArray);
+                adapter.setDropDownViewResource(R.layout.spinneritem);
+                input.setAdapter(adapter);
+
+                //Dialogo para mostrar spinner
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Cambio de mesa");
+
+                        // Set up the input
+
+                        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+
+                builder.setView(input);
+
+                        // Set up the buttons
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        String mesa = spinnerMap.get(input.getSelectedItemPosition());
+                        try {
+                            db.cambio_mesa(mesa);
+                            Intent intent = new Intent(getApplicationContext(), tables.class);
+                            startActivity(intent);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
+
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private void ver_comanda() {
 
@@ -177,4 +265,5 @@ public class comanda extends AppCompatActivity {
 
 
     }
+
 }

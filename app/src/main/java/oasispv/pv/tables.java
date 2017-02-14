@@ -227,6 +227,8 @@ public class tables extends AppCompatActivity {
 
         //borrar datos existentes
         dbs.delete(DBhelper.TABLE_PVMESA, null, null);
+        dbs.delete(DBhelper.TABLE_COMANDA, null, null);
+        dbs.delete(DBhelper.TABLE_COMANDAENC, null, null);
 
         String query_mesas = "SELECT PM_MESA,PM_NOMBRE FROM PVMESAS WHERE PM_MOVI='"+variables.movi+"' AND PM_FASE='"+variables.fase+"'";
 
@@ -290,7 +292,7 @@ public class tables extends AppCompatActivity {
 
 
 
-        String query = "SELECT CD_PRODUCTO,PR_DESC,CD_CANTIDAD,CD_TIEMPO FROM PVCHEQDIADET,PVPRODUCTOS " +
+        String query = "SELECT CD_PRODUCTO,PR_DESC,CD_CANTIDAD,CD_TIEMPO,CD_TOTAL,CD_CARTA,NVL(CD_RECETA,'0') CD_RECETA FROM PVCHEQDIADET,PVPRODUCTOS " +
                 "WHERE CD_MOVI='" + variables.movi + "' AND CD_FASE='" + variables.fase + "' AND CD_CAN_U IS NULL AND CD_TRANSA='" + transa + "' AND PR_PRODUCTO=CD_PRODUCTO";
 
 
@@ -307,7 +309,9 @@ public class tables extends AppCompatActivity {
                 cv.put(DBhelper.CMD_PRID, rs.getString("CD_PRODUCTO"));
                 cv.put(DBhelper.CMD_PRDESC, rs.getString("PR_DESC"));
                 cv.put(DBhelper.CMD_CANTIDAD, rs.getInt("CD_CANTIDAD"));
-                cv.put(DBhelper.CMD_COMENSAL, 1);
+                cv.put(DBhelper.CMD_PRECIO, rs.getFloat("CD_TOTAL"));
+                cv.put(DBhelper.CMD_CARTA, rs.getString("CD_CARTA"));
+                cv.put(DBhelper.CMD_COMENSAL, Integer.parseInt(rs.getString("CD_RECETA")));
                 cv.put(DBhelper.CMD_TIEMPO, rs.getInt("CD_TIEMPO"));
                 cv.put(DBhelper.CMD_STATUS, "E");
                 dbs.insert(DBhelper.TABLE_COMANDA, null, cv);
