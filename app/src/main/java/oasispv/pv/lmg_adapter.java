@@ -1,7 +1,6 @@
 package oasispv.pv;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +16,9 @@ public class lmg_adapter extends BaseAdapter {
     private ArrayList<datosmod> lista;
 
 
-
     public lmg_adapter(Context context, ArrayList<datosmod> lista) {
         this.context = context;
-        this.lista=lista;
+        this.lista = lista;
     }
 
     @Override
@@ -47,7 +45,6 @@ public class lmg_adapter extends BaseAdapter {
         TextView txtsel;
 
 
-
         //http://developer.android.com/intl/es/reference/android/view/LayoutInflater.html
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -66,7 +63,7 @@ public class lmg_adapter extends BaseAdapter {
         txtguar.setText(lista.get(position).guar);
         txtsel.setText(lista.get(position).def);
 
-        if(lista.get(position).def.equals("S")) {
+        if (lista.get(position).def.equals("S")) {
 
             itemView.setBackgroundResource(R.drawable.shapesel);
 

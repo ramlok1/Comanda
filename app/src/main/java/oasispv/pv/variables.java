@@ -1,12 +1,10 @@
 package oasispv.pv;
 
-import java.util.ArrayList;
-
 /**
  * Created by Usuario on 28/11/2016.
  */
 
-public  class variables {
+public class variables {
 
     public static String ip;
     public static String cn;
@@ -33,9 +31,6 @@ public  class variables {
     public static int erroroc;
     public static int turno;
     public static float tprecio;
-
-
-
 
 
 }

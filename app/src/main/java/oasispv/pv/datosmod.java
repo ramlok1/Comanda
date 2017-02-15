@@ -5,17 +5,17 @@ package oasispv.pv;
  */
 
 public class datosmod {
-    public  String desc;
-    public  String modo;
-    public  String guar;
-    public  String def;
+    public String desc;
+    public String modo;
+    public String guar;
+    public String def;
 
 
     public datosmod(String desc, String modo, String guar, String def) {
-        this.desc=desc;
-        this.modo=modo;
-        this.guar=guar;
-        this.def=def;
+        this.desc = desc;
+        this.modo = modo;
+        this.guar = guar;
+        this.def = def;
 
     }
 }

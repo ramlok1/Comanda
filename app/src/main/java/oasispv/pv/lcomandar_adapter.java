@@ -16,10 +16,9 @@ public class lcomandar_adapter extends BaseAdapter {
     private ArrayList<datoscomanda> lista;
 
 
-
     public lcomandar_adapter(Context context, ArrayList<datoscomanda> lista) {
         this.context = context;
-        this.lista=lista;
+        this.lista = lista;
     }
 
     @Override

@@ -12,7 +12,9 @@ import android.os.PowerManager.WakeLock;
 final class wifiManager {
     private static final String TAG = "groundy";
 
-    /** Non instance constant class. */
+    /**
+     * Non instance constant class.
+     */
     private wifiManager() {
     }
 
@@ -48,17 +50,19 @@ final class wifiManager {
         return info != null && info.getType() == ConnectivityManager.TYPE_WIFI;
     }
 
-    /** CPU wake lock unique instance. */
+    /**
+     * CPU wake lock unique instance.
+     */
     private static WakeLock cpuWakeLock;
 
     /**
      * Register a wake lock to power management in the device.
      *
      * @param context Context to use
-     * @param awake if true the device cpu will keep awake until false is called back. if true is
-     * passed several times only the first time after a false call will take effect,
-     * also if false is passed and previously the cpu was not turned on (true call)
-     * does nothing.
+     * @param awake   if true the device cpu will keep awake until false is called back. if true is
+     *                passed several times only the first time after a false call will take effect,
+     *                also if false is passed and previously the cpu was not turned on (true call)
+     *                does nothing.
      */
     public static void keepCpuAwake(Context context, boolean awake) {
         if (cpuWakeLock == null) {
@@ -80,17 +84,19 @@ final class wifiManager {
         }
     }
 
-    /** WiFi lock unique instance. */
+    /**
+     * WiFi lock unique instance.
+     */
     private static WifiLock wifiLock;
 
     /**
      * Register a WiFi lock to WiFi management in the device.
      *
      * @param context Context to use
-     * @param on if true the device WiFi radio will keep awake until false is called back. if
-     * true is passed several times only the first time after a false call will take
-     * effect, also if false is passed and previously the WiFi radio was not turned on
-     * (true call) does nothing.
+     * @param on      if true the device WiFi radio will keep awake until false is called back. if
+     *                true is passed several times only the first time after a false call will take
+     *                effect, also if false is passed and previously the WiFi radio was not turned on
+     *                (true call) does nothing.
      */
     public static void keepWiFiOn(Context context, boolean on) {
         if (wifiLock == null) {

@@ -156,13 +156,13 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String CG_COMANDA = "CG_COMANDA";
     public static final String CG_COMANDA_DET = "CG_COMANDA_DET";
     public static final String CG_PRODUCTO = "CG_PRODUCTO";
-    public static final String CG_GRUPO= "CG_GRUPO";
-    public static final String CG_GRUPO_DESC= "CG_GRUPO_DESC";
-    public static final String CG_MODO= "CG_MODO";
-    public static final String CG_DESC= "CG_DESC";
-    public static final String CG_MANDA= "CG_MANDA";
-    public static final String CG_DEFAULT= "CG_DEFAULT";
-    public static final String CG_SELECCION= "CG_SELECCION";
+    public static final String CG_GRUPO = "CG_GRUPO";
+    public static final String CG_GRUPO_DESC = "CG_GRUPO_DESC";
+    public static final String CG_MODO = "CG_MODO";
+    public static final String CG_DESC = "CG_DESC";
+    public static final String CG_MANDA = "CG_MANDA";
+    public static final String CG_DEFAULT = "CG_DEFAULT";
+    public static final String CG_SELECCION = "CG_SELECCION";
 
     // TABLA PVMODGUAR
     public static final String GU_COMANDA = "GU_COMANDA";
@@ -170,7 +170,7 @@ public class DBhelper extends SQLiteOpenHelper {
     public static final String GU_PRODUCTO = "GU_PRODUCTO";
     public static final String GU_GUAR = "GU_GUAR";
     public static final String GU_DESC = "GU_DESC";
-    public static final String GU_DEFAULT= "GU_DEFAULT";
+    public static final String GU_DEFAULT = "GU_DEFAULT";
     public static final String GU_SELECCION = "GU_SELECCION";
 
 
@@ -185,9 +185,9 @@ public class DBhelper extends SQLiteOpenHelper {
 
     // TABLA PVRVANOMBRE
     public static final String PN_RESERVA = "PN_RESERVA";
-    public static final String PN_HABI= "PN_HABI";
-    public static final String PN_NOMBRE= "PN_NOMBRE";
-    public static final String PN_SEC= "PN_SEC";
+    public static final String PN_HABI = "PN_HABI";
+    public static final String PN_NOMBRE = "PN_NOMBRE";
+    public static final String PN_SEC = "PN_SEC";
     // TABLA BRAZALETES
     public static final String BU_RESERVA = "BU_RESERVA";
     public static final String BU_FOLIO = "BU_FOLIO";
@@ -197,8 +197,8 @@ public class DBhelper extends SQLiteOpenHelper {
 
     // CREAR TABLA PVRVANOMBRE
     private static final String CREATE_TABLE_PVRVANOMBRE = "CREATE TABLE "
-            + TABLE_PVRVANOMBRE + "(" + PN_RESERVA + " TEXT,"+ PN_HABI + " TEXT,"
-            + PN_NOMBRE + " TEXT,"+ PN_SEC + " INTEGER"
+            + TABLE_PVRVANOMBRE + "(" + PN_RESERVA + " TEXT," + PN_HABI + " TEXT,"
+            + PN_NOMBRE + " TEXT," + PN_SEC + " INTEGER"
             + ")";
     // CREAR TABLA BRAZALETES
     private static final String CREATE_TABLE_BRAZA = "CREATE TABLE "
@@ -213,110 +213,109 @@ public class DBhelper extends SQLiteOpenHelper {
     // CREAR TABLA COMANDAENC
     private static final String CREATE_TABLE_COMANDAENC = "CREATE TABLE "
             + TABLE_COMANDAENC + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + CE_SESION + " TEXT,"+ CE_TRANSA + " TEXT,"+ CE_MESA + " TEXT,"
-            + CE_MESERO + " TEXT,"+ CE_STATUS + " TEXT"
+            + CE_SESION + " TEXT," + CE_TRANSA + " TEXT," + CE_MESA + " TEXT,"
+            + CE_MESERO + " TEXT," + CE_STATUS + " TEXT"
             + ")";
     // CREAR TABLA PVPRODUCTOSMODOSG
     private static final String CREATE_TABLE_PVPRODUCTOSMODOSG = "CREATE TABLE "
             + TABLE_PVPRODUCTOSMODOSG + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + GP_PRODUCTO + " TEXT,"+ GP_GRUPO + " TEXT,"+ GP_GRUPO_DESC + " TEXT"
+            + GP_PRODUCTO + " TEXT," + GP_GRUPO + " TEXT," + GP_GRUPO_DESC + " TEXT"
             + ")";
     // CREAR TABLA PVMODOS
     private static final String CREATE_TABLE_PVMODOS = "CREATE TABLE "
             + TABLE_PVMODOS + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + MD_GRUPO + " TEXT,"+ MD_MODO + " TEXT,"+ MD_DESC + " TEXT,"
+            + MD_GRUPO + " TEXT," + MD_MODO + " TEXT," + MD_DESC + " TEXT,"
             + MD_DEFAULT + " TEXT"
             + ")";
     // CREAR TABLA PVMODCG
     private static final String CREATE_TABLE_PVMODCG = "CREATE TABLE "
-            + TABLE_PVMODCG + "(" + CG_COMANDA + " INTEGER,"+ CG_COMANDA_DET + " INTEGER,"
-            + CG_PRODUCTO + " TEXT,"+ CG_GRUPO + " TEXT,"+CG_GRUPO_DESC + " TEXT,"+ CG_MODO + " TEXT,"+ CG_DESC + " TEXT,"
-            + CG_MANDA + " TEXT," +CG_DEFAULT + " TEXT," +CG_SELECCION + " TEXT"
+            + TABLE_PVMODCG + "(" + CG_COMANDA + " INTEGER," + CG_COMANDA_DET + " INTEGER,"
+            + CG_PRODUCTO + " TEXT," + CG_GRUPO + " TEXT," + CG_GRUPO_DESC + " TEXT," + CG_MODO + " TEXT," + CG_DESC + " TEXT,"
+            + CG_MANDA + " TEXT," + CG_DEFAULT + " TEXT," + CG_SELECCION + " TEXT"
             + ")";
     // CREAR TABLA PVGUAR
     private static final String CREATE_TABLE_PVGUAR = "CREATE TABLE "
-            + TABLE_PVGUAR + "(" + GU_COMANDA + " INTEGER,"+ GU_COMANDA_DET + " INTEGER,"
-            + GU_PRODUCTO + " TEXT,"+ GU_GUAR + " TEXT,"+ GU_DESC + " TEXT,"+ GU_DEFAULT + " TEXT,"+ GU_SELECCION + " TEXT"
+            + TABLE_PVGUAR + "(" + GU_COMANDA + " INTEGER," + GU_COMANDA_DET + " INTEGER,"
+            + GU_PRODUCTO + " TEXT," + GU_GUAR + " TEXT," + GU_DESC + " TEXT," + GU_DEFAULT + " TEXT," + GU_SELECCION + " TEXT"
             + ")";
     // CREAR TABLA PVMODCG_TMP
     private static final String CREATE_TABLE_TMP_PVMODCG = "CREATE TABLE "
             + TABLE_TMP_PVMODCG + "(" + CG_COMANDA + " INTEGER,"
-            + CG_PRODUCTO + " TEXT,"+ CG_GRUPO + " TEXT,"+CG_GRUPO_DESC + " TEXT,"+ CG_MODO + " TEXT,"+ CG_DESC + " TEXT,"
+            + CG_PRODUCTO + " TEXT," + CG_GRUPO + " TEXT," + CG_GRUPO_DESC + " TEXT," + CG_MODO + " TEXT," + CG_DESC + " TEXT,"
             + CG_MANDA + " TEXT," + CG_DEFAULT + " TEXT," + CG_SELECCION + " TEXT"
             + ")";
     // CREAR TABLA PVGUAR_TMP
     private static final String CREATE_TABLE_TMP_PVGUAR = "CREATE TABLE "
             + TABLE_TMP_PVGUAR + "(" + GU_COMANDA + " INTEGER,"
-            + GU_PRODUCTO + " TEXT,"+ GU_GUAR + " TEXT,"+ GU_DESC + " TEXT,"+ GU_DEFAULT + " TEXT,"+ GU_SELECCION + " TEXT"
+            + GU_PRODUCTO + " TEXT," + GU_GUAR + " TEXT," + GU_DESC + " TEXT," + GU_DEFAULT + " TEXT," + GU_SELECCION + " TEXT"
             + ")";
     // CREAR TABLA PVMODOSG
     private static final String CREATE_TABLE_PVMODOSG = "CREATE TABLE "
             + TABLE_PVMODOSG + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + MG_GRUPO + " TEXT,"+ MG_DESC + " TEXT,"+ MG_MANDAT + " TEXT"
+            + MG_GRUPO + " TEXT," + MG_DESC + " TEXT," + MG_MANDAT + " TEXT"
             + ")";
     // CREAR TABLA PVPRODUCTOSMODI
     private static final String CREATE_TABLE_PVPRODUCTOSMODI = "CREATE TABLE "
             + TABLE_PVPRODUCTOSMODI + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + MP_PRODUCTO + " TEXT,"+ MP_MODI + " TEXT,"+ MP_DEFAULT + " TEXT"
+            + MP_PRODUCTO + " TEXT," + MP_MODI + " TEXT," + MP_DEFAULT + " TEXT"
             + ")";
     // CREAR TABLA COMANDA
     private static final String CREATE_TABLE_COMANDA = "CREATE TABLE "
             + TABLE_COMANDA + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + CMD_SESION + " INTEGER,"+ CMD_MESA + " TEXT,"+ CMD_TRANSA + " TEXT,"
-            + CMD_PRID + " TEXT,"+ CMD_PRDESC + " TEXT,"+ CMD_CANTIDAD + " INTEGER,"+ CMD_PRECIO + " FLOAT,"+ CMD_CARTA + " TEXT,"
-            + CMD_COMENSAL + " INTEGER,"+ CMD_TIEMPO + " INTEGER,"+ CMD_NOTA + " TEXT,"
+            + CMD_SESION + " INTEGER," + CMD_MESA + " TEXT," + CMD_TRANSA + " TEXT,"
+            + CMD_PRID + " TEXT," + CMD_PRDESC + " TEXT," + CMD_CANTIDAD + " INTEGER," + CMD_PRECIO + " FLOAT," + CMD_CARTA + " TEXT,"
+            + CMD_COMENSAL + " INTEGER," + CMD_TIEMPO + " INTEGER," + CMD_NOTA + " TEXT,"
             + CMD_STATUS + " TEXT"
             + ")";
 
     // CREAR TABLA PVCAT1
     private static final String CREATE_TABLE_PVCAT1 = "CREATE TABLE "
             + TABLE_PVCAT1 + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + KEY_CAT1_MOVI + " TEXT,"+ KEY_CAT1_FASE + " TEXT,"
-            + KEY_CAT1_CARTA + " TEXT,"+ KEY_CAT1 + " TEXT,"
-            + KEY_CAT1_IMAGEN + " TEXT,"+ KEY_CAT1_DESC + " TEXT,"
+            + KEY_CAT1_MOVI + " TEXT," + KEY_CAT1_FASE + " TEXT,"
+            + KEY_CAT1_CARTA + " TEXT," + KEY_CAT1 + " TEXT,"
+            + KEY_CAT1_IMAGEN + " TEXT," + KEY_CAT1_DESC + " TEXT,"
             + KEY_CAT1_POS + " INTEGER"
             + ")";
 
     // CREAR TABLA PVCAT2
     private static final String CREATE_TABLE_PVCAT2 = "CREATE TABLE "
             + TABLE_PVCAT2 + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + KEY_CAT2_MOVI + " TEXT,"+ KEY_CAT2_FASE + " TEXT,"+KEY_CAT2_CAT1+" TEXT,"
-            + KEY_CAT2_CARTA + " TEXT,"+ KEY_CAT2 + " TEXT,"
-            + KEY_CAT2_IMAGEN + " TEXT,"+ KEY_CAT2_DESC + " TEXT,"
+            + KEY_CAT2_MOVI + " TEXT," + KEY_CAT2_FASE + " TEXT," + KEY_CAT2_CAT1 + " TEXT,"
+            + KEY_CAT2_CARTA + " TEXT," + KEY_CAT2 + " TEXT,"
+            + KEY_CAT2_IMAGEN + " TEXT," + KEY_CAT2_DESC + " TEXT,"
             + KEY_CAT2_POS + " INTEGER"
             + ")";
 
     // CREAR TABLA PVMENUS
     private static final String CREATE_TABLE_PVMENUS = "CREATE TABLE "
             + TABLE_PVMENUS + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + KEY_PM_MOVI + " TEXT,"+ KEY_PM_FASE + " TEXT,"+KEY_PM_CAT1+" TEXT,"
-            + KEY_PM_CAT2 + " TEXT,"+ KEY_PM_PRODUCTO + " TEXT,"
-            + KEY_PM_PRODUCTO_DESC + " TEXT,"+ KEY_PM_POS + " INTEGER,"
-            + KEY_PM_PRECIO + " INTEGER,"+ KEY_PM_IVA + " INTEGER,"+ KEY_PM_CARTA + " TEXT,"
-            + KEY_PM_COMISION + " INTEGER,"+ KEY_PM_PROPINA + " INTEGER,"
-            + KEY_PM_FAMILIA + " TEXT,"+ KEY_PM_GRUPOPR + " TEXT,"
-            + KEY_PM_SUBFAMILIAPR + " TEXT,"+ KEY_PM_MODI + " TEXT,"+ KEY_PM_GUAR + " TEXT"
+            + KEY_PM_MOVI + " TEXT," + KEY_PM_FASE + " TEXT," + KEY_PM_CAT1 + " TEXT,"
+            + KEY_PM_CAT2 + " TEXT," + KEY_PM_PRODUCTO + " TEXT,"
+            + KEY_PM_PRODUCTO_DESC + " TEXT," + KEY_PM_POS + " INTEGER,"
+            + KEY_PM_PRECIO + " INTEGER," + KEY_PM_IVA + " INTEGER," + KEY_PM_CARTA + " TEXT,"
+            + KEY_PM_COMISION + " INTEGER," + KEY_PM_PROPINA + " INTEGER,"
+            + KEY_PM_FAMILIA + " TEXT," + KEY_PM_GRUPOPR + " TEXT,"
+            + KEY_PM_SUBFAMILIAPR + " TEXT," + KEY_PM_MODI + " TEXT," + KEY_PM_GUAR + " TEXT"
             + ")";
 
     // CREAR TABLA PVMESA
     private static final String CREATE_TABLE_PVMESA = "CREATE TABLE "
             + TABLE_PVMESA + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + KEY_MOVI + " TEXT,"+ KEY_FASE + " TEXT,"+KEY_MESA+" TEXT,"+KEY_MESA_NAME+" TEXT,"+KEY_MESA_MESERO+" TEXT,"
-            + KEY_HABI + " TEXT,"+ KEY_GUEST + " TEXT,"
+            + KEY_MOVI + " TEXT," + KEY_FASE + " TEXT," + KEY_MESA + " TEXT," + KEY_MESA_NAME + " TEXT," + KEY_MESA_MESERO + " TEXT,"
+            + KEY_HABI + " TEXT," + KEY_GUEST + " TEXT,"
             + KEY_PAX + " TEXT"
             + ")";
     // CREAR TABLA CONEXION
     private static final String CREATE_TABLE_CONEXION = "CREATE TABLE "
             + TABLE_CONNECT + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + KEY_TIPO + " TEXT,"+ KEY_MOVI_C + " TEXT,"+KEY_FASE_C+" TEXT,"+ KEY_NAME_C + " TEXT,"+KEY_UN+" TEXT,"+KEY_PW+" TEXT,"+KEY_CN+" TEXT,"
-            + KEY_IP + " TEXT,"+ KEY_MODI + " TEXT"
+            + KEY_TIPO + " TEXT," + KEY_MOVI_C + " TEXT," + KEY_FASE_C + " TEXT," + KEY_NAME_C + " TEXT," + KEY_UN + " TEXT," + KEY_PW + " TEXT," + KEY_CN + " TEXT,"
+            + KEY_IP + " TEXT," + KEY_MODI + " TEXT"
             + ")";
     // CREAR TABLA SESION
     private static final String CREATE_TABLE_SESION = "CREATE TABLE "
             + TABLE_SESION + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + SES_MESERO + " TEXT,"+ SES_MOVI + " TEXT,"+SES_FASE+" TEXT,"+SES_STATUS+" TEXT"
+            + SES_MESERO + " TEXT," + SES_MOVI + " TEXT," + SES_FASE + " TEXT," + SES_STATUS + " TEXT"
             + ")";
-
 
 
     public DBhelper(Context context) {
@@ -376,4 +375,5 @@ public class DBhelper extends SQLiteOpenHelper {
 
         // create new tables
         onCreate(db);
-    }}
+    }
+}
