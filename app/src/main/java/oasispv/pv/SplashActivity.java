@@ -433,7 +433,12 @@ public class SplashActivity extends AppCompatActivity {
             } else {
                 t = Toast.makeText(getApplicationContext(), "Error en conexion. Intentando nuevamente...", Toast.LENGTH_SHORT);
                 t.show();
-                new datostablet().execute();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        new datostablet().execute();
+                    }
+                }, 3000);
             }
         }
 

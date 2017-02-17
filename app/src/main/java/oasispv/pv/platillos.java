@@ -46,6 +46,7 @@ public class platillos extends AppCompatActivity {
     listrestadp adapter;
     Boolean lis = false;
     ConnectOra db = ConnectOra.getInstance();
+    View layout;
 
 
     @Override
@@ -330,9 +331,14 @@ public class platillos extends AppCompatActivity {
                         float dato5 = Float.parseFloat(((List<String>) v.getTag()).get(4).toString());
                         String dato6 = ((List<String>) v.getTag()).get(5).toString();
 
+                        PopupWindow pwin = popup_window(dato2);
                         if (variables.modipv.equalsIgnoreCase("S")) {
-                            popup_window(dato1, dato2, dato3, dato4, dato5, dato6);
-                        } else {
+                            comensal_tiempo(pwin,dato1, dato2, dato3, dato4, dato5, dato6);
+                        } else if(dato3.equalsIgnoreCase("S")||dato4.equalsIgnoreCase("S")){
+
+                            modificadores(dato1, dato2,layout, pwin, dato4, dato5, dato6);
+                        }
+                        else{
                             inserta_producto(dato1, dato2, 1, 1, dato5, dato6);
                             muestra_cmdtmp();
                         }
@@ -352,81 +358,13 @@ public class platillos extends AppCompatActivity {
         }
     }
 
-    /*    private void popup_comanda() {
-             final PopupWindow pwindo;
-            String query = "SELECT ID,PRDESC,CANTIDAD,COMENSAL,TIEMPO,NOTA FROM " + DBhelper.TABLE_COMANDA + " WHERE MESA='" + variables.mesa + "'  AND STATUS='A' AND SESION='"+variables.sesion+"'";
-            Cursor rs = dbs.rawQuery(query, null);
-            ArrayList<datoscomanda> datos = new ArrayList<>();
 
-            if (rs.moveToFirst()) {
-                do {
-                    try {
-                        datos.add(new datoscomanda(
-                                rs.getString(rs.getColumnIndex(DBhelper.CMD_PRDESC)),
-                                rs.getInt(rs.getColumnIndex(DBhelper.CMD_CANTIDAD)),
-                                rs.getInt(rs.getColumnIndex(DBhelper.CMD_COMENSAL)),
-                                rs.getInt(rs.getColumnIndex(DBhelper.CMD_TIEMPO)),
-                                rs.getInt(rs.getColumnIndex(DBhelper.KEY_ID)),
-                                rs.getString(rs.getColumnIndex(DBhelper.CMD_NOTA))
-                        ));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }while (rs.moveToNext());
-
-                LayoutInflater inflat = (LayoutInflater) platillos.this
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-                View layout = inflat.inflate(R.layout.poplay,
-                        (ViewGroup) findViewById(R.id.popup_element));
-
-                ListView laycmdread = (ListView) layout.findViewById(R.id.listprd);
-                listrestadp adapter = new listrestadp(platillos.this,datos);
-                laycmdread.setAdapter(adapter);
-                int x = findViewById(R.id.laybtns).getWidth();
-                pwindo = new PopupWindow(layout, x,900, true);
-                pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
-                btnClosePopup = (Button) layout.findViewById(R.id.btncmdcont);
-                btnClosePopup.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        pwindo.dismiss();
-                        muestra_cmdtmp();
-                    }
-                });
-
-            }
+    private void comensal_tiempo(final PopupWindow pwindo, final String dato1, final String dato2, final String modi, final String guar, final float precio, final String carta) {
 
 
 
-
-        }*/
-    private void popup_window(final String dato1, final String dato2, final String modi, final String guar, final float precio, final String carta) {
-
-        final PopupWindow pwindo;
-
-
-        LayoutInflater inflat = (LayoutInflater) platillos.this
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View layout = inflat.inflate(R.layout.popup_window,
-                (ViewGroup) findViewById(R.id.popup_window_lp));
-
-        TextView txttitle = (TextView) layout.findViewById(R.id.txttitlepop);
-        variables.prdesc = dato2;
-        txttitle.setText(dato2);
-
-
-        pwindo = new PopupWindow(layout, 600, 600, true);
+        ////////if////
         pwindo.showAtLocation(layout, Gravity.CENTER, 0, -20);
-
-        btnClosePopup = (Button) layout.findViewById(R.id.btnxpop);
-        btnClosePopup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pwindo.dismiss();
-
-            }
-        });
         LinearLayout contenedorpop = (LinearLayout) layout.findViewById(R.id.laypopbtn);
         LinearLayout contenedor = new LinearLayout(this);
         contenedor.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 100));
@@ -512,13 +450,13 @@ public class platillos extends AppCompatActivity {
                     pwindo.dismiss();
                 } else {
 
-                    modificadores(dato1, dato2, modi, layout, pwindo, guar, precio, carta);
+                    modificadores(dato1, dato2, layout, pwindo, guar, precio, carta);
                 }
 
 
             }
         });
-
+///////if ////
 
     }
 
@@ -688,15 +626,15 @@ public class platillos extends AppCompatActivity {
 
     }
 
-    private void modificadores(final String pr, final String dato2, final String modi, final View layout, final PopupWindow pwindo, final String guar, final float precio, final String carta) {
+    private void modificadores(final String pr, final String dato2, final View layout, final PopupWindow pwindo, final String guar, final float precio, final String carta) {
 
 
         LinearLayout btnsContainer = (LinearLayout) layout.findViewById(R.id.laypopbtn);
         btnsContainer.removeAllViews();
 
-        LinearLayout contenedor1 = null;
-        LinearLayout contenedor2 = null;
-
+        LinearLayout contenedor1;
+        LinearLayout contenedor2;
+        pwindo.showAtLocation(layout, Gravity.CENTER, 0, -20);
         contenedor1 = new LinearLayout(this);
         ListView listamg = new ListView(this);
         listamg.setId(R.id.listamg);
@@ -720,9 +658,6 @@ public class platillos extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 pwindo.dismiss();
-                popup_window(pr, dato2, modi, guar, precio, carta);
-
-
             }
         });
 
@@ -1025,6 +960,34 @@ public class platillos extends AppCompatActivity {
 
             return resp;
         }
+    }
+
+    public PopupWindow popup_window(String dato){
+        final PopupWindow pwindo;
+
+
+        LayoutInflater inflat = (LayoutInflater) platillos.this
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+             layout = inflat.inflate(R.layout.popup_window,
+                (ViewGroup) findViewById(R.id.popup_window_lp));
+
+        TextView txttitle = (TextView) layout.findViewById(R.id.txttitlepop);
+        variables.prdesc = dato;
+        txttitle.setText(dato);
+
+
+        pwindo = new PopupWindow(layout, 600, 600, true);
+
+
+        btnClosePopup = (Button) layout.findViewById(R.id.btnxpop);
+        btnClosePopup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pwindo.dismiss();
+
+            }
+        });
+        return pwindo;
     }
 
 }

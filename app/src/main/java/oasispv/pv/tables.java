@@ -171,7 +171,8 @@ public class tables extends AppCompatActivity {
                             variables.mesa_pax = 1;
                             ////Abre comanda
                             try {
-                                genera_comanda(variables.mesero, variables.mesa, db.genera_transa());
+                                String transa =db.genera_transa();
+                                genera_comanda(variables.mesero, variables.mesa, transa);
                                 variables.cmd = busca_comanda(variables.mesa);
                                 db.inserta_comanda_enc();
                             } catch (SQLException e) {

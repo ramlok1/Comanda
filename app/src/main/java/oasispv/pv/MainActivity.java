@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String usr = txtuser.getText().toString().trim();
                 String pwd = txtpwd.getText().toString().trim();
-                int loging = 0;
+                int loging ;
 
                 try {
                     loging = db.getlogin(usr, pwd);

@@ -170,6 +170,13 @@ public class ConnectOra {
                 + "' WHERE CE_MOVI='" + variables.movi + "' AND CE_FASE= '" + variables.fase + "' AND CE_TRANSA= '" + variables.cmd + "' AND CE_MESA= '" + Integer.parseInt(variables.mesa) + "'";
 
         s.executeQuery(sql);
+        String sqlcta="INSERT INTO PVCHEQDIACTA (CT_MOVI, CT_FASE, CT_TRANSA, CT_CUENTA, CT_IMPORTE, CT_TIP, CT_TOTAL)"+
+                "VALUES ('"+variables.movi+"','"+variables.fase+"','"+variables.cmd+"','1',0,0,0)";
+        s.executeQuery(sqlcta);
+
+        String sqlfp="INSERT INTO PVCHEQDIACTAFP (FP_MOVI, FP_FASE, FP_TRANSA, FP_CUENTA, FP_RESERVA, FP_MOVI_FP, FP_FASE_FP, FP_IMPORTE, FP_FOLIO, FP_POS, FP_BANCO)"+
+        "(SELECT '"+variables.movi+"','"+variables.fase+"','"+variables.cmd+"','1',NULL,PP_FP_MOVI,PP_FP_FASE,0,NULL,NULL,NULL FROM PVFPXPV WHERE PP_MOVI='"+variables.movi+"' AND PP_FASE='"+variables.fase+"' and PP_ACTIVO='S' )";
+        s.executeQuery(sqlfp);
         s.close();
 
 
@@ -204,13 +211,13 @@ public class ConnectOra {
                 String transa = genera_transa_det();
 
 
-                String sql = "insert into PVCHEQDIADET (CD_MOVI, CD_FASE, CD_TRANSA, CD_ID, CD_PRODUCTO,CD_CANTIDAD, CD_PRECIO, CD_IVA, CD_IMPORTE, CD_DESCTO_IMP, CD_TOTAL, CD_TIEMPO, CD_MOD, CD_CAP_H, CD_CAP_U, CD_PROPINA_INC, CD_COMISION_INC, CD_COSTO,  CD_NOTAS,CD_CARTA,CD_RECETA)"
+                String sql = "insert into PVCHEQDIADET (CD_MOVI, CD_FASE, CD_TRANSA, CD_ID, CD_PRODUCTO,CD_CANTIDAD, CD_PRECIO, CD_IVA, CD_IMPORTE, CD_DESCTO_IMP, CD_TOTAL, CD_TIEMPO, CD_MOD, CD_CAP_H, CD_CAP_U, CD_PROPINA_INC, CD_COMISION_INC, CD_COSTO,  CD_NOTAS,CD_CARTA,CD_RECETA,CD_CUENTA)"
                         + " VALUES ('" + variables.movi + "'," + "'" + variables.fase + "'," + "'"
                         + variables.cmd + "'," + "'" + transa + "'," + "'" + rs.getString(rs.getColumnIndex(DBhelper.CMD_PRID)) + "',"
                         + rs.getInt(rs.getColumnIndex(DBhelper.CMD_CANTIDAD)) + "," + rs.getInt(rs.getColumnIndex(DBhelper.CMD_PRECIO)) + "," + (rs.getInt(rs.getColumnIndex(DBhelper.CMD_PRECIO)) / 1.16) * .16 + "," + rs.getInt(rs.getColumnIndex(DBhelper.CMD_PRECIO)) + "," + 0 + "," + rs.getInt(rs.getColumnIndex(DBhelper.CMD_PRECIO)) + ","
                         + "'" + rs.getString(rs.getColumnIndex(DBhelper.CMD_TIEMPO)) + "'," + "'" + "0" + "'," + "'" + Utils.Hora(new Date()) + "'," + "'" + variables.mesero + "'," + 0 + "," + 0 + "," + 0 + "," +
                         "CASE WHEN'" + rs.getString(rs.getColumnIndex(DBhelper.CMD_NOTA)) + "'='null' THEN NULL ELSE '" + rs.getString(rs.getColumnIndex(DBhelper.CMD_NOTA)) + "' END," +
-                        "','" + rs.getString(rs.getColumnIndex(DBhelper.CMD_CARTA)) + "','" + rs.getInt(rs.getColumnIndex(DBhelper.CMD_COMENSAL)) + "')";
+                        "'" + rs.getString(rs.getColumnIndex(DBhelper.CMD_CARTA)) + "','" + rs.getInt(rs.getColumnIndex(DBhelper.CMD_COMENSAL)) + "','1')";
 
                 s.executeQuery(sql);
 
